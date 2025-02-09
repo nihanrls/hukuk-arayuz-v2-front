@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import Link from 'next/link';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -87,11 +88,16 @@ const HeroSection = () => {
 
           {/* İçerik - Ortalanmış */}
           <div className="relative h-full max-w-7xl mx-auto flex items-center justify-center px-4 sm:px-6 lg:px-8">
-            <div className="text-center text-white">
-              <h1 className="text-5xl md:text-6xl font-bold mb-4 text-gray-100 font-crimson">
+            <motion.div 
+              initial={{ y: 50, opacity: 0 }} 
+              animate={{ y: 0, opacity: 1 }} 
+              transition={{ duration: 0.5 }} // Animasyon süresi
+              className="text-center text-white"
+            >
+              <h1 className="text-6xl md:text-7xl font-bold mb-4 text-gray-100 font-crimson">
                 {slide.title}
               </h1>
-              <p className="text-2xl mb-8 font-crimson">
+              <p className="text-3xl mb-8 font-crimson">
                 {slide.description}
               </p>
               <Link href={slide.buttonLink}>
@@ -99,7 +105,7 @@ const HeroSection = () => {
                   {slide.buttonText}
                 </button>
               </Link>
-            </div>
+            </motion.div>
           </div>
         </div>
       ))}
