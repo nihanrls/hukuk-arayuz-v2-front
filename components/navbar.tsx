@@ -29,11 +29,11 @@ const Navbar = () => {
           <div className="text-lg font-medium">Av. İsim Soyisim</div>
         </Link>
         <div className="hidden md:flex flex-1 justify-center gap-6">
-          <Link href="/" className="hover:text-gray-300">Ana Sayfa</Link>
-          <Link href="/hakkinda" className="hover:text-gray-300">Hakkında</Link>
-          <Link href="/iletisim" className="hover:text-gray-300">Bize Ulaşın</Link>
-          <Link href="/blog" className="hover:text-gray-300">Blog</Link>
-          <Link href="/sss" className="hover:text-gray-300">SSS</Link>
+          <Link href="/" className="hover:text-gray-300 hover:underline">Ana Sayfa</Link>
+          <Link href="/hakkinda" className="hover:text-gray-300 hover:underline">Hakkında</Link>
+          <Link href="/iletisim" className="hover:text-gray-300 hover:underline">Bize Ulaşın</Link>
+          <Link href="/blog" className="hover:text-gray-300 hover:underline">Blog</Link>
+          <Link href="/sss" className="hover:text-gray-300 hover:underline">SSS</Link>
           <div className="relative">
             <button 
               onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -43,7 +43,7 @@ const Navbar = () => {
               <ChevronDown size={18} />
             </button>
             {dropdownOpen && (
-              <div className="absolute left-0 mt-2 w-48 bg-[#26369b] shadow-md rounded-md overflow-hidden">
+              <div className="absolute left-0 mt-2 w-48 bg-[#111C31] shadow-md rounded-md overflow-hidden">
                 <Link href="/hesaplama1" className="block px-4 py-2 hover:bg-[#4352a5]">Hesaplama 1</Link>
                 <Link href="/hesaplama2" className="block px-4 py-2 hover:bg-[#4352a5]">Hesaplama 2</Link>
                 <Link href="/hesaplama3" className="block px-4 py-2 hover:bg-[#4352a5]">Hesaplama 3</Link>

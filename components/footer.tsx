@@ -52,9 +52,10 @@ const Footer = () => {
           <h2 className="text-28px font-bold mb-4 font-ubuntu">Hızlı Linkler</h2>
           <ul className="space-y-2">
             <li><a href="/" className="hover:underline text-18px font-nunito">Ana Sayfa</a></li>
-            <li><a href="/about" className="hover:underline text-18px font-nunito">Hakkında</a></li>
-            <li><a href="/faq" className="hover:underline text-18px font-nunito">SSS</a></li>
-            <li><a href="/contact" className="hover:underline text-18px font-nunito">Bize Ulaşın</a></li>
+            <li><a href="/hakkinda" className="hover:underline text-18px font-nunito">Hakkında</a></li>
+            <li><a href="/sss" className="hover:underline text-18px font-nunito">SSS</a></li>
+            <li><a href="/bizeulasin" className="hover:underline text-18px font-nunito">Bize Ulaşın</a></li>
+            <li><a href="/blog" className="hover:underline text-18px font-nunito">Blog</a></li>
           </ul>
         </div>
 
