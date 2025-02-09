@@ -63,7 +63,7 @@ const HeroSection = () => {
 
   if (!isMounted) return null; // İstemci tarafında render etmeden önce kontrol et
 
-  const buttonClasses = "bg-[#d4b996] hover:bg-[#c5aa87] text-[#2c1810] font-semibold px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg transform";
+  const buttonClasses = "bg-[#C31414] hover:bg-[#c5aa87] text-[#2c1810] font-semibold px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg transform";
 
   return (
     <div className="relative h-[800px] lg:h-[900px] w-full overflow-hidden -mt-20 group">

@@ -3,7 +3,7 @@ import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa'
 
 const Footer = () => {
   return (
-    <footer className="bg-dark-blue text-white py-10 px-5">
+    <footer className="bg-[#111C31] text-white py-10 px-5">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
         {/* Hakkında */}
         <div>
@@ -64,6 +64,14 @@ const Footer = () => {
           <p className="text-18px font-nunito">📍 7935 Springs, NY</p>
           <p className="text-18px font-nunito">📧 infoattoyer@gmail.com</p>
         </div>
+      </div>
+
+      {/* Soluk Çizgi */}
+      <div className="border-t border-gray-300 my-4 opacity-50"></div>
+
+      {/* Copyright Kısmı */}
+      <div className="text-center mt-2">
+        <p className="text-16px font-nunito">© 2023 Tüm Hakları Saklıdır.</p>
       </div>
     </footer>
   );
