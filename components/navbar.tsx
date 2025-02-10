@@ -31,7 +31,7 @@ const Navbar = () => {
         <div className="hidden md:flex flex-1 justify-center gap-6">
           <Link href="/" className="hover:text-gray-300 hover:underline">Ana Sayfa</Link>
           <Link href="/hakkinda" className="hover:text-gray-300 hover:underline">Hakkında</Link>
-          <Link href="/iletisim" className="hover:text-gray-300 hover:underline">Bize Ulaşın</Link>
+          <Link href="/bizeulasin" className="hover:text-gray-300 hover:underline">Bize Ulaşın</Link>
           <Link href="/blog" className="hover:text-gray-300 hover:underline">Blog</Link>
           <Link href="/sss" className="hover:text-gray-300 hover:underline">SSS</Link>
           <div className="relative">

@@ -16,7 +16,7 @@ const HeroSection = () => {
       description: "Profesyonel ekibimizle en iyi hizmeti sunuyoruz",
       image: "/media/herosec/background1.jpg",
       buttonText: "Detaylı Bilgi",
-      buttonLink: "/avukatlar"
+      buttonLink: "/hakkinda"
     },
     {
       id: 2,
@@ -24,15 +24,15 @@ const HeroSection = () => {
       description: "20 yıllık tecrübemizle yanınızdayız",
       image: "/media/herosec/background2.jpg",
       buttonText: "Bize Ulaşın",
-      buttonLink: "/iletisim"
+      buttonLink: "/bizeulasin"
     },
     {
       id: 3,
-      title: "Modern Yaklaşım",
-      description: "Yenilikçi çözümlerle işinizi ileriye taşıyın",
+      title: "Sıkça Sorulan Sorular",
+      description: "Sizin için derledik",
       image: "/media/herosec/background3.jpg",
-      buttonText: "Hizmetlerimiz",
-      buttonLink: "/hizmetler"
+      buttonText: "SSS",
+      buttonLink: "/sss"
     }
   ];
 
@@ -63,7 +63,7 @@ const HeroSection = () => {
 
   if (!isMounted) return null; // İstemci tarafında render etmeden önce kontrol et
 
-  const buttonClasses = "bg-[#C31414] hover:bg-[#c5aa87] text-[#2c1810] font-semibold px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg transform";
+  const buttonClasses = "bg-[#111C31] hover:bg-[#4352A5] text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg transform";
 
   return (
     <div className="relative h-[800px] lg:h-[900px] w-full overflow-hidden -mt-20 group">
