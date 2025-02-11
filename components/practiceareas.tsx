@@ -48,9 +48,9 @@ const PracticeAreas = () => {
   };
 
   return (
-    <div className="relative w-full py-10 bg-gray-100 overflow-hidden">
-      <div className="text-left mb-8 ml-10">
-        <h2 className="text-3xl text-black font-bold font-ubuntu mb-6">Çalışılan Alanlar</h2>
+    <div className="relative w-full py-10 bg-[#f5f5f0] overflow-hidden">
+      <div className="text-left mb-8 ml-7">
+        <h2 className="text-3xl font-bold font-[Crimson] text-gray-800">Çalışılan Alanlar</h2>
       </div>
       <div className="flex justify-between items-center mb-4 px-4">
         <button onClick={prevSlide} className="p-2 bg-gray-700 text-white rounded-full"><FaArrowLeft /></button>
