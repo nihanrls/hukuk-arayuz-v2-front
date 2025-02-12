@@ -1,9 +1,15 @@
 "use client";
 import { FaMapMarkerAlt, FaPhone, FaEnvelope } from 'react-icons/fa';
+import { motion } from 'framer-motion';
 
 const Konum = () => {
   return (
-    <div className="w-full bg-[#f5f5f0] py-12 mt-12">
+    <motion.div 
+      className="w-full bg-[#f5f5f0] py-12 mt-16"
+      initial={{ opacity: 0, y: 20 }} // Başlangıç durumu
+      animate={{ opacity: 1, y: 0 }} // Animasyon durumu
+      transition={{ duration: 0.5 }} // Geçiş süresi
+    >
       <div className="max-w-7xl mx-auto px-4">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="flex flex-col lg:flex-row">
@@ -34,10 +40,8 @@ const Konum = () => {
                 <div>
                   <h3 className="font-semibold text-gray-800 mb-1">Adres</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Örnek Mahallesi, <br />
-                    Örnek Sokak No:123 <br />
-                    Kat:4 Daire:8 <br />
-                    Ankara
+                    Cermodern, <br />
+                    Ankara, Türkiye
                   </p>
                 </div>
               </div>
@@ -79,7 +83,7 @@ const Konum = () => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
-
+import { motion } from 'framer-motion';
 const ConsultForm = () => {
   const [formData, setFormData] = useState({
     fullName: '',
@@ -75,7 +75,12 @@ const ConsultForm = () => {
   };
 
   return (
-    <div className="w-full bg-[#f5f5f0] py-12">
+    <motion.div 
+      className="w-full bg-[#f5f5f0] py-12"
+      initial={{ opacity: 0, y: 20 }} // Başlangıç durumu
+      animate={{ opacity: 1, y: 0 }} // Animasyon durumu
+      transition={{ duration: 0.5 }} // Geçiş süresi
+    >
       <div className="max-w-4xl mx-auto px-4">
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="mb-8 text-center">
@@ -157,7 +162,7 @@ const ConsultForm = () => {
           </form>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
