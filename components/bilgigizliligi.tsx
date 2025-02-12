@@ -35,7 +35,7 @@ const PrivacyComponent = () => {
         className="w-1/2 pr-4"
         initial={{ opacity: 0, y: 30 }}
         animate={isVisible ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{ duration: 1, ease: "easeOut" }}
       >
         <h2 className="text-3xl font-bold font-[Crimson] text-gray-800">
           Bilgi Gizliliği

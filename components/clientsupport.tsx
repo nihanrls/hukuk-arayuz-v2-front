@@ -50,7 +50,7 @@ const ClientSupport = () => {
         className="relative z-10"
         initial={{ opacity: 0, y: 30 }}
         animate={isVisible ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{ duration: 1, ease: "easeOut" }}
       >
         <h2 className="text-4xl font-bold font-[Crimson] mb-4 text-white">Her bir danışanımıza yardımcı olmayı amaçlıyoruz. </h2>
         <p className="text-lg text-left font-[Ubuntu] text-gray-200 mb-6">

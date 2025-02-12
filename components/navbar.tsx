@@ -4,11 +4,15 @@ import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,7 +26,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 p-4 transition-all duration-300 ${isScrolled ? 'bg-[#111C31]' : 'bg-transparent'}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 p-4 transition-all duration-300 ${isHomePage ? (isScrolled ? 'bg-[#111C31]' : 'bg-transparent') : 'bg-[#111C31]'}`}>
       <div className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
           <img src="/media/logo.png" alt="Logo" className="w-10 h-10" />

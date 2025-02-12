@@ -13,7 +13,7 @@ const HeroSection = () => {
     {
       id: 1,
       title: "Kaliteli Hizmet",
-      description: "Profesyonel ekibimizle en iyi hizmeti sunuyoruz",
+      description: "Hukuki çözümleriniz için yanınızdayım.",
       image: "/media/herosec/background1.jpg",
       buttonText: "Detaylı Bilgi",
       buttonLink: "/hakkinda"
@@ -21,7 +21,7 @@ const HeroSection = () => {
     {
       id: 2,
       title: "Güvenilir Çözümler",
-      description: "20 yıllık tecrübemizle yanınızdayız",
+      description: "20 yıllık tecrübemizle yanınızdayım.",
       image: "/media/herosec/background2.jpg",
       buttonText: "Bize Ulaşın",
       buttonLink: "/bizeulasin"
@@ -29,7 +29,7 @@ const HeroSection = () => {
     {
       id: 3,
       title: "Sıkça Sorulan Sorular",
-      description: "Sizin için derledik",
+      description: "Sizin için derlediğimiz sıkça sorulan sorular.",
       image: "/media/herosec/background3.jpg",
       buttonText: "SSS",
       buttonLink: "/sss"
