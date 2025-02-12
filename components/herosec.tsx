@@ -20,11 +20,16 @@ const HeroSection = () => {
     },
     {
       id: 2,
-      title: "Güvenilir Çözümler",
-      description: "20 yıllık tecrübemizle yanınızdayım.",
+      title: "Blog",
+      description: (
+        <>
+          Hukuk alanındaki güncel gelişmeleri ve önemli konuları <br />
+          ele alan blog yazılarımızı keşfedin.
+        </>
+      ),
       image: "/media/herosec/background2.jpg",
-      buttonText: "Bize Ulaşın",
-      buttonLink: "/bizeulasin"
+      buttonText: "Göz At",
+      buttonLink: "/blog"
     },
     {
       id: 3,

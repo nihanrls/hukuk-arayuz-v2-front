@@ -30,7 +30,7 @@ const AboutPage = () => {
           </div>
 
           {/* Sağ Taraf - Bilgiler */}
-          <div className="lg:w-2/3 space-y-6">
+          <div className="lg:w-2/3 space-y-6 ml-4">
             <h1 className="text-4xl lg:text-5xl font-bold font-[Crimson] text-gray-800">
               Av. İsim Soyisim
             </h1>
@@ -67,7 +67,8 @@ const AboutPage = () => {
                 <p className="text-gray-600 leading-relaxed">
                   Müvekkillerime en iyi hukuki danışmanlığı sunmayı hedefliyorum. 
                   Hukuk alanındaki eğitimim ve deneyimlerimle, karmaşık davaları başarıyla yönetme konusunda kararlıyım. 
-                  Etik değerlere olan bağlılığım ve müvekkil memnuniyetine verdiğim önemle tanınmayı amaçlıyorum.
+                  İş hayatım, [Üniversite Adı] Hukuk Fakültesi'nden mezun olmamla başladı ve burada edindiğim bilgi ve becerilerle 
+                  müvekkillerime en iyi hizmeti sunmayı, etik değerlere olan bağlılığım ve müvekkil memnuniyetine verdiğim önemle tanınmayı amaçlıyorum.
                 </p>
               </div>
 
