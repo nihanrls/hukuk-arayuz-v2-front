@@ -1,0 +1,147 @@
+/* Primary style */
+.faq *, .faq *::after, .faq *::before {
+  box-sizing: border-box;
+}
+
+.faq {
+  width: 90%;
+  max-width: 1024px;
+  margin: 2em auto;
+  position: relative;
+  background-color: #F9FAFB;
+  padding: 40px;
+  border-radius: 12px;
+}
+
+/* Sabit menü */
+.categories {
+  width: 20%;
+  float: left;
+  position: fixed;
+  top: 50%;
+  left: 50;
+  transform: translateY(-50%);
+  transition: all 0.3s ease;
+}
+
+.categories a {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  height: 50px;
+  line-height: 50px;
+  padding: 0 28px 0 16px;
+  background-color: transparent;
+  color: #A2A2C9;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 18px;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.categories .selected {
+  color: #6454a4 !important;
+  border-right: 3px solid #6454a4;
+  font-weight: 800;
+}
+
+.verticalLine {
+  position: absolute;
+  left: 220px;
+  height: 100%;
+  border-left: medium solid #6354a3;
+  border-radius: 25px;
+}
+
+.faqItems {
+  width: 78%;
+  float: right;
+}
+
+.faqGroup {
+  margin-bottom: 60px;
+  scroll-margin-top: 100px;
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.faqTitle {
+  margin-bottom: 30px;
+}
+
+.iconh2div {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.faqTitle h2 {
+  font-size: 42px;
+  font-weight: 800;
+  color: #68689F;
+}
+
+.icondiv img {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+}
+
+.trigger {
+  display: block;
+  padding: 20px;
+  margin-bottom: 10px;
+  background: white;
+  color: #68689F;
+  font-size: 18px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-radius: 4px;
+}
+
+.trigger:hover {
+  background: #f8f8f8;
+}
+
+.faqContent {
+  padding: 20px;
+  color: #666;
+  line-height: 1.6;
+  background: white;
+}
+
+.contentVisible .faqContent {
+  display: block;
+}
+
+/* Responsive tasarım */
+@media only screen and (max-width: 768px) {
+  .faq {
+    padding: 20px;
+  }
+
+  .categories {
+    display: none; /* Mobilde kategorileri gizle */
+  }
+
+  .faqItems {
+    width: 100%;
+    float: none;
+  }
+
+  .verticalLine {
+    display: none;
+  }
+
+  .faqTitle h2 {
+    font-size: 32px;
+  }
+
+  .faqGroup {
+    scroll-margin-top: 80px;
+  }
+}
