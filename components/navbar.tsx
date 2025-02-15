@@ -71,7 +71,7 @@ const Navbar = () => {
             </button>
             <Link href="/" className="hover:text-blue-600">Ana Sayfa</Link>
             <Link href="/hakkinda" className="hover:text-blue-600">Hakkında</Link>
-            <Link href="/iletisim" className="hover:text-blue-600">Bize Ulaşın</Link>
+            <Link href="/bizeulasin" className="hover:text-blue-600">Bize Ulaşın</Link>
             <Link href="/blog" className="hover:text-blue-600">Blog</Link>
             <Link href="/sss" className="hover:text-blue-600">SSS</Link>
             <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center gap-1 hover:text-blue-600">
