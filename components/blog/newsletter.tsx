@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 
 const Newsletter = () => {
   const [email, setEmail] = useState('');
@@ -11,7 +12,13 @@ const Newsletter = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm">
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="bg-white p-6 rounded-lg shadow-sm"
+    >
       <h3 className="text-lg font-bold text-[#111C31] mb-4 font-ubuntu">
         Hukuk Bültenimize Abone Olun
       </h3>
@@ -34,7 +41,7 @@ const Newsletter = () => {
           Abone Ol
         </button>
       </form>
-    </div>
+    </motion.div>
   );
 };
 

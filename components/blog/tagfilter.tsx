@@ -1,3 +1,5 @@
+import { motion } from 'framer-motion';
+
 interface TagFilterProps {
     tags: string[];
     selectedTags: string[];
@@ -6,7 +8,13 @@ interface TagFilterProps {
   
   const TagFilter = ({ tags, selectedTags, onTagSelect }: TagFilterProps) => {
     return (
-      <div className="bg-white p-6 rounded-lg shadow-sm">
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="bg-white p-6 rounded-lg shadow-sm"
+      >
         <h3 className="text-lg font-bold text-[#111C31] mb-4 font-ubuntu">
           Kategoriler
         </h3>
@@ -24,7 +32,7 @@ interface TagFilterProps {
             </button>
           ))}
         </div>
-      </div>
+      </motion.div>
     );
   };
   

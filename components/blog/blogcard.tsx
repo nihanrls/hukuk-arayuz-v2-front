@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 interface BlogCardProps {
   post: {
@@ -16,7 +17,13 @@ interface BlogCardProps {
 
 const BlogCard = ({ post }: BlogCardProps) => {
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+      className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
+    >
       <Link href={`/blog/${post.id}`}>
         <div className="relative h-48">
           <Image
@@ -49,7 +56,7 @@ const BlogCard = ({ post }: BlogCardProps) => {
           </div>
         </div>
       </Link>
-    </div>
+    </motion.div>
   );
 };
 
