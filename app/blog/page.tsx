@@ -10,7 +10,7 @@ import SocialShare from '../../components/blog/socialshare';
 
 // Örnek veri
 const tags = [
-  "Ceza Hukuku", "Aile Hukuku", "İş Hukuku", "Miras Hukuku", 
+  "Ceza Hukuku", "Medeni Hukuk", "İş Hukuku", "Miras Hukuku", 
   "Borçlar Hukuku", "Ticaret Hukuku", "İdare Hukuku"
 ];
 
@@ -42,8 +42,8 @@ const blogPosts = [
     author: "Av. Elif Kaya",
     date: "2024-03-05",
     readTime: "7 dk",
-    tags: ["Aile Hukuku"],
-    image: "/blog-images/aile-hukuku.jpg"
+    tags: ["Medeni Hukuk"],
+    image: "/blog-images/medeni-hukuk.jpg"
   },
   {
     id: 4,
@@ -52,7 +52,7 @@ const blogPosts = [
     author: "Av. Selin Yıldız",
     date: "2024-02-28",
     readTime: "5 dk",
-    tags: ["Miras Hukuku"],
+    tags: ["Medeni Hukuk"],
     image: "/blog-images/miras-hukuku.jpg"
   },
   {
@@ -82,9 +82,9 @@ const blogPosts = [
     author: "Av. Selin Yıldız",
     date: "2024-02-28",
     readTime: "5 dk",
-    tags: ["Miras Hukuku"],
+    tags: ["Medeni Hukuk"],
     image: "/blog-images/miras-hukuku.jpg"
-  },
+  }
 ];
 
 const POSTS_PER_PAGE = 6;

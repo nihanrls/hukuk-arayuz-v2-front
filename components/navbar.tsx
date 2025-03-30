@@ -7,9 +7,19 @@ import { motion } from "framer-motion";
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 
+const services = [
+  { name: "Ceza Hukuku", slug: "ceza-hukuku" },
+  { name: "Medeni Hukuk", slug: "medeni-hukuk" },
+  { name: "İş Hukuku", slug: "is-hukuku" },
+  { name: "Ticaret Hukuku", slug: "ticaret-hukuku" },
+  { name: "İdare Hukuku", slug: "idare-hukuku" },
+  { name: "Sigorta Hukuku", slug: "sigorta-hukuku" },
+];
+
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === '/';
@@ -35,6 +45,28 @@ const Navbar = () => {
         <div className="hidden md:flex flex-1 justify-center gap-6">
           <Link href="/" className="hover:text-gray-300 hover:underline">Ana Sayfa</Link>
           <Link href="/hakkinda" className="hover:text-gray-300 hover:underline">Hakkında</Link>
+          <div className="relative">
+            <button 
+              onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)}
+              className="flex items-center gap-1 hover:text-gray-300"
+            >
+              Hizmetler
+              <ChevronDown size={18} />
+            </button>
+            {servicesDropdownOpen && (
+              <div className="absolute left-0 mt-2 w-48 bg-[#111C31] shadow-md rounded-md overflow-hidden">
+                {services.map((service) => (
+                  <Link 
+                    key={service.slug}
+                    href={`/hizmetler/${service.slug}`}
+                    className="block px-4 py-2 hover:bg-[#4352a5]"
+                  >
+                    {service.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
           <Link href="/bizeulasin" className="hover:text-gray-300 hover:underline">Bize Ulaşın</Link>
           <Link href="/blog" className="hover:text-gray-300 hover:underline">Blog</Link>
           <Link href="/sss" className="hover:text-gray-300 hover:underline">SSS</Link>
@@ -71,6 +103,23 @@ const Navbar = () => {
             </button>
             <Link href="/" className="hover:text-blue-600">Ana Sayfa</Link>
             <Link href="/hakkinda" className="hover:text-blue-600">Hakkında</Link>
+            <button onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)} className="flex items-center gap-1 hover:text-blue-600">
+              Hizmetler
+              <ChevronDown size={18} />
+            </button>
+            {servicesDropdownOpen && (
+              <div className="flex flex-col gap-2 pl-4">
+                {services.map((service) => (
+                  <Link 
+                    key={service.slug}
+                    href={`/hizmetler/${service.slug}`}
+                    className="hover:text-blue-600"
+                  >
+                    {service.name}
+                  </Link>
+                ))}
+              </div>
+            )}
             <Link href="/bizeulasin" className="hover:text-blue-600">Bize Ulaşın</Link>
             <Link href="/blog" className="hover:text-blue-600">Blog</Link>
             <Link href="/sss" className="hover:text-blue-600">SSS</Link>

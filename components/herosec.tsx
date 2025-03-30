@@ -15,8 +15,8 @@ const HeroSection = () => {
       title: "Kaliteli Hizmet",
       description: "Hukuki çözümleriniz için yanınızdayım.",
       image: "/media/herosec/background1.jpg",
-      buttonText: "Detaylı Bilgi",
-      buttonLink: "/hakkinda"
+      buttonText: "İletişim",
+      buttonLink: "/bizeulasin"
     },
     {
       id: 2,

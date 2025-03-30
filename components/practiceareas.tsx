@@ -6,7 +6,7 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 const practiceAreas = [
   { title: "İş Hukuku", description: "Şirketler hukuku ile ilgili danışmanlık hizmetleri.", image: "/media/workarea/business-law.jpg"},
   { title: "Gayrimenkul Hukuku", description: "Gayrimenkul hukuku konularında uzman rehberlik.", image: "/media/workarea/real-estate-law.jpg" },
-  { title: "Aile Hukuku", description: "Boşanma, velayet ve aile içi anlaşmazlıklar.", image: "/media/workarea/family-law.jpg" },
+  { title: "Medeni Hukuk", description: "Boşanma, velayet ve aile içi anlaşmazlıklar.", image: "/media/workarea/family-law.jpg" },
   { title: "Ceza Hukuku", description: "Ceza hukuku konularında savunma hizmetleri.", image: "/media/workarea/criminal-law.jpg" },
   { title: "Fikri Mülkiyet Hukuku", description: "Fikri mülkiyet hakları koruma danışmanlığı.", image: "/media/workarea/intellectual-property.jpg" },
   { title: "Vergi Hukuku", description: "Vergi hukuku konularında uzman danışmanlık.", image: "/media/workarea/tax-law.jpg" }
