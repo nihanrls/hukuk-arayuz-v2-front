@@ -38,7 +38,7 @@ const AboutPage = () => {
           {/* Sağ Taraf - Bilgiler */}
           <div className="lg:w-2/3 space-y-6 ml-4">
             <h1 className="text-4xl lg:text-5xl font-bold font-[Crimson] text-gray-800">
-              Av. İsim Soyisim
+              Av. Serhat Maverdeler
             </h1>
             
             <div className="space-y-4">
@@ -50,7 +50,7 @@ const AboutPage = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  avukat@email.com
+                  avserhatmaverdeler@gmail.com
                 </a>
               </div>
               
@@ -76,10 +76,10 @@ const AboutPage = () => {
               >
                 <h2 className="text-xl font-semibold text-gray-700">Hakkında</h2>
                 <p className="text-gray-600 leading-relaxed">
-                  Müvekkillerime en iyi hukuki danışmanlığı sunmayı hedefliyorum. 
-                  Hukuk alanındaki eğitimim ve deneyimlerimle, karmaşık davaları başarıyla yönetme konusunda kararlıyım. 
-                  İş hayatım, [Üniversite Adı] Hukuk Fakültesi'nden mezun olmamla başladı ve burada edindiğim bilgi ve becerilerle 
-                  müvekkillerime en iyi hizmeti sunmayı, etik değerlere olan bağlılığım ve müvekkil memnuniyetine verdiğim önemle tanınmayı amaçlıyorum.
+                  Konya Karatay Üniversitesi Hukuk Fakültesi'nden mezun olduktan sonra, Ankara'da avukatlık mesleğine başladım. 
+                  Hukuk alanındaki eğitimim ve deneyimlerimle, müvekkillerime en iyi hukuki danışmanlığı sunmayı hedefliyorum. 
+                  Özellikle ceza hukuku, ticaret hukuku ve iş hukuku alanlarında uzmanlaşarak, karmaşık davaları başarıyla yönetme konusunda kararlıyım. 
+                  Müvekkillerime en iyi hizmeti sunmayı, etik değerlere olan bağlılığım ve müvekkil memnuniyetine verdiğim önemle tanınmayı amaçlıyorum.
                 </p>
               </motion.div>
 
