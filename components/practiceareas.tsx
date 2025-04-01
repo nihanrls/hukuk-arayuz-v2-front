@@ -71,18 +71,19 @@ const PracticeAreas = () => {
                   <img 
                     src={area.image} 
                     alt={area.title} 
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${
+                      area.title === "İş Hukuku" ? "object-[center_30%]" : ""
+                    }`}
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-40"></div>
                 </div>
-                <div className={`
-                  absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent
-                  transform transition-transform duration-300
-                  sm:translate-y-full sm:group-hover:translate-y-0
-                  ${window.innerWidth < 640 ? 'translate-y-0' : ''}
-                `}>
-                  <h3 className="text-2xl font-bold mb-2">{area.title}</h3>
-                  <p className="text-lg opacity-90">{area.description}</p>
+                <div className="absolute bottom-0 left-0 right-0">
+                  <div className="p-6 transform translate-y-[calc(100%-4rem)] transition-transform duration-300 group-hover:translate-y-0 bg-gradient-to-t from-black to-transparent">
+                    <h3 className="text-2xl font-bold mb-4">{area.title}</h3>
+                    <p className="text-lg opacity-90">
+                      {area.description}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
