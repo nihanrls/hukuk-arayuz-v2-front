@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
+import Link from 'next/link';
 
 const Footer = () => {
   return (
@@ -19,43 +20,28 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Son Paylaşımlar */}
+        {/* Hizmetlerimiz */}
         <div>
-          <h2 className="text-28px font-bold mb-4 font-ubuntu">Son Paylaşımlar</h2>
-          <div className="space-y-4">
-            <div className="flex items-center">
-              <img src="/path/to/image1.jpg" alt="Post 1" className="w-16 h-16 mr-4" />
-              <div>
-                <h3 className="font-semibold text-18px font-nunito">Essential for the Construction</h3>
-                <p className="text-18px font-nunito">12 Jan 2019</p>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <img src="/path/to/image2.jpg" alt="Post 2" className="w-16 h-16 mr-4" />
-              <div>
-                <h3 className="font-semibold text-18px font-nunito">Essential for the Construction</h3>
-                <p className="text-18px font-nunito">28 Jan 2019</p>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <img src="/path/to/image3.jpg" alt="Post 3" className="w-16 h-16 mr-4" />
-              <div>
-                <h3 className="font-semibold text-18px font-nunito">Essential for the Construction</h3>
-                <p className="text-18px font-nunito">15 Feb 2019</p>
-              </div>
-            </div>
-          </div>
+          <h2 className="text-28px font-bold mb-4 font-ubuntu">Hizmetlerimiz</h2>
+          <ul className="space-y-2">
+            <li><Link href="/hizmetler/ceza-hukuku" className="hover:text-[#4352A5] text-18px font-nunito">Ceza Hukuku</Link></li>
+            <li><Link href="/hizmetler/medeni-hukuk" className="hover:text-[#4352A5] text-18px font-nunito">Medeni Hukuk</Link></li>
+            <li><Link href="/hizmetler/is-hukuku" className="hover:text-[#4352A5] text-18px font-nunito">İş Hukuku</Link></li>
+            <li><Link href="/hizmetler/ticaret-hukuku" className="hover:text-[#4352A5] text-18px font-nunito">Ticaret Hukuku</Link></li>
+            <li><Link href="/hizmetler/idare-hukuku" className="hover:text-[#4352A5] text-18px font-nunito">İdare Hukuku</Link></li>
+            <li><Link href="/hizmetler/sigorta-hukuku" className="hover:text-[#4352A5] text-18px font-nunito">Sigorta Hukuku</Link></li>
+          </ul>
         </div>
 
         {/* Hızlı Linkler */}
         <div>
           <h2 className="text-28px font-bold mb-4 font-ubuntu">Hızlı Linkler</h2>
           <ul className="space-y-2">
-            <li><a href="/" className="hover:underline text-18px font-nunito">Ana Sayfa</a></li>
-            <li><a href="/hakkinda" className="hover:underline text-18px font-nunito">Hakkında</a></li>
-            <li><a href="/sss" className="hover:underline text-18px font-nunito">SSS</a></li>
-            <li><a href="/bizeulasin" className="hover:underline text-18px font-nunito">Bize Ulaşın</a></li>
-            <li><a href="/blog" className="hover:underline text-18px font-nunito">Blog</a></li>
+            <li><Link href="/" className="hover:text-[#4352A5] text-18px font-nunito">Ana Sayfa</Link></li>
+            <li><Link href="/hakkinda" className="hover:text-[#4352A5] text-18px font-nunito">Hakkında</Link></li>
+            <li><Link href="/sss" className="hover:text-[#4352A5] text-18px font-nunito">SSS</Link></li>
+            <li><Link href="/bizeulasin" className="hover:text-[#4352A5] text-18px font-nunito">Bize Ulaşın</Link></li>
+            <li><Link href="/blog" className="hover:text-[#4352A5] text-18px font-nunito">Blog</Link></li>
           </ul>
         </div>
 

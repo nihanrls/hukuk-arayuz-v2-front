@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Avukat",
-  description: "Avukat",
+  title: "Hukuk Bürosu",
+  description: "Profesyonel hukuk danışmanlığı hizmetleri",
 };
 
 export default function RootLayout({
@@ -27,10 +27,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="tr">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Navbar />
         {children}
         <Footer />
