@@ -5,7 +5,6 @@ import BlogCard from '../../components/blog/blogcard';
 import TagFilter from '../../components/blog/tagfilter';
 import RecentPosts from '../../components/blog/recentposts';
 import Pagination from '../../components/blog/pagination';
-import Newsletter from '../../components/blog/newsletter';
 import SocialShare from '../../components/blog/socialshare';
 
 // Örnek veri
@@ -152,8 +151,6 @@ const BlogPage = () => {
               
               {/* Son Yazılar */}
               <RecentPosts posts={blogPosts.slice(-3)} />
-              
-              <Newsletter />
               
               <SocialShare 
                 url={typeof window !== 'undefined' ? window.location.href : ''}

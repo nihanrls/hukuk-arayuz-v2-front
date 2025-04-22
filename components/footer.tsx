@@ -58,7 +58,7 @@ const Footer = () => {
 
       {/* Copyright Kısmı */}
       <div className="text-center mt-2">
-        <p className="text-16px font-nunito">© 2023 Tüm Hakları Saklıdır.</p>
+        <p className="text-16px font-nunito">© 2025 Tüm Hakları Saklıdır.</p>
       </div>
     </footer>
   );

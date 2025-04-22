@@ -10,7 +10,6 @@ export default function Home() {
     <div>
       <HeroSection />
       <PracticeAreas />      
-      
       <PrivacyComponent />
       <ClientSupport />
       <MostReadArticles />

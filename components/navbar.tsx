@@ -40,7 +40,7 @@ const Navbar = () => {
       <div className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
           <img src="/media/logo.png" alt="Logo" className="w-10 h-10" />
-          <div className="text-lg font-medium">Av. Serhat Maverdeler</div>
+          <div className="text-lg font-medium text-gray-200">Av. Serhat Maverdeler</div>
         </Link>
         <div className="hidden md:flex flex-1 justify-center gap-6">
           <Link href="/" className="text-gray-300 hover:text-[#4352A5] transition-colors duration-200">Ana Sayfa</Link>
