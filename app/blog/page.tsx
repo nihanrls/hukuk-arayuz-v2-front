@@ -1,90 +1,12 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import BlogCard from '../../components/blog/blogcard';
 import TagFilter from '../../components/blog/tagfilter';
 import RecentPosts from '../../components/blog/recentposts';
 import Pagination from '../../components/blog/pagination';
 import SocialShare from '../../components/blog/socialshare';
-
-// Örnek veri
-const tags = [
-  "Ceza Hukuku", "Medeni Hukuk", "İş Hukuku", "Miras Hukuku", 
-  "Borçlar Hukuku", "Ticaret Hukuku", "İdare Hukuku"
-];
-
-const blogPosts = [
-  {
-    id: 1,
-    title: "İş Sözleşmesinin Feshi ve Haklar",
-    excerpt: "İş sözleşmesinin feshi durumunda işçi ve işveren hakları nelerdir? Detaylı hukuki analiz...",
-    author: "Av. Mehmet Yılmaz",
-    date: "2024-03-15",
-    readTime: "8 dk",
-    tags: ["İş Hukuku", "Sözleşmeler"],
-    image: "/blog-images/is-hukuku.jpg"
-  },
-  {
-    id: 2,
-    title: "Ceza Davalarında Zamanaşımı Süreleri",
-    excerpt: "Ceza davalarında zamanaşımı süreleri nelerdir? Hangi durumlarda zamanaşımı uygulanır?",
-    author: "Av. Ahmet Demir",
-    date: "2024-03-10",
-    readTime: "6 dk",
-    tags: ["Ceza Hukuku"],
-    image: "/blog-images/ceza-hukuku.jpg"
-  },
-  {
-    id: 3,
-    title: "Aile Hukuku ve Boşanma Süreci",
-    excerpt: "Boşanma süreci nasıl işler? Aile hukuku kapsamında haklarınız nelerdir?",
-    author: "Av. Elif Kaya",
-    date: "2024-03-05",
-    readTime: "7 dk",
-    tags: ["Medeni Hukuk"],
-    image: "/blog-images/medeni-hukuk.jpg"
-  },
-  {
-    id: 4,
-    title: "Miras Hukuku: Mirasın Paylaşımı",
-    excerpt: "Miras paylaşımı nasıl yapılır? Miras hukuku kapsamında dikkat edilmesi gerekenler.",
-    author: "Av. Selin Yıldız",
-    date: "2024-02-28",
-    readTime: "5 dk",
-    tags: ["Medeni Hukuk"],
-    image: "/blog-images/miras-hukuku.jpg"
-  },
-  {
-    id: 5,
-    title: "Ticaret Hukuku ve Sözleşmeler",
-    excerpt: "Ticaret hukuku kapsamında sözleşmelerin önemi ve geçerlilik şartları.",
-    author: "Av. Canan Çelik",
-    date: "2024-02-20",
-    readTime: "9 dk",
-    tags: ["Ticaret Hukuku"],
-    image: "/blog-images/ticaret-hukuku.jpg"
-  },
-  {
-    id: 6,
-    title: "İdare Hukuku: İdari İşlemler",
-    excerpt: "İdari işlemler nelerdir? İdare hukuku kapsamında haklarınız.",
-    author: "Av. Oğuzhan Arslan",
-    date: "2024-02-15",
-    readTime: "6 dk",
-    tags: ["İdare Hukuku"],
-    image: "/blog-images/idare-hukuku.jpg"
-  },
-  {
-    id: 7,
-    title: "Miras Hukuku: Mirasın Paylaşımı",
-    excerpt: "Miras paylaşımı nasıl yapılır? Miras hukuku kapsamında dikkat edilmesi gerekenler.",
-    author: "Av. Selin Yıldız",
-    date: "2024-02-28",
-    readTime: "5 dk",
-    tags: ["Medeni Hukuk"],
-    image: "/blog-images/miras-hukuku.jpg"
-  }
-];
+import { getBlogPosts, BlogPost } from '../../lib/api';
 
 const POSTS_PER_PAGE = 6;
 
@@ -92,24 +14,80 @@ const BlogPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [shareUrl, setShareUrl] = useState('');
+
+  useEffect(() => {
+    const fetchBlogPosts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        console.log('Fetching blog posts...');
+        const response = await getBlogPosts(currentPage, POSTS_PER_PAGE);
+        console.log('API Response:', response);
+        
+        if (!response || !response.data) {
+          throw new Error('No data received from server');
+        }
+
+        // Validate the data structure
+        const validPosts = response.data.filter((post: BlogPost) => 
+          post && 
+          post.id && 
+          post.attributes && 
+          post.attributes.title
+        );
+
+        if (validPosts.length === 0) {
+          console.log('No valid blog posts found');
+          setBlogPosts([]);
+        } else {
+          setBlogPosts(validPosts);
+        }
+
+        setTotalPages(response.meta?.pagination?.pageCount || 1);
+      } catch (error) {
+        console.error('Error fetching blog posts:', error);
+        setError('Blog yazıları yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+        setBlogPosts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogPosts();
+  }, [currentPage]);
+
+  useEffect(() => {
+    setShareUrl(window.location.href);
+  }, []);
 
   // Filtrelenmiş blogları al
   const filteredPosts = blogPosts.filter(post => {
-    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
+    if (!post || !post.attributes) return false;
+    
+    const matchesSearch = post.attributes.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         post.attributes.excerpt?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesTags = selectedTags.length === 0 || 
-                       post.tags.some(tag => selectedTags.includes(tag));
+                       (post.attributes.tags?.some(tag => selectedTags.includes(tag)) ?? false);
     return matchesSearch && matchesTags;
   });
-
-  // Toplam sayfa sayısını hesapla
-  const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
 
   // Mevcut sayfadaki blogları al
   const currentPosts = filteredPosts.slice(
     (currentPage - 1) * POSTS_PER_PAGE,
     currentPage * POSTS_PER_PAGE
   );
+
+  // Tüm etiketleri topla
+  const allTags = Array.from(new Set(
+    blogPosts
+      .filter(post => post?.attributes?.tags)
+      .flatMap(post => post.attributes.tags)
+  ));
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -131,55 +109,91 @@ const BlogPage = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sol Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-4 space-y-8">
-              {/* Etiket Filtreleme */}
-              <TagFilter 
-                tags={tags}
-                selectedTags={selectedTags}
-                onTagSelect={(tag) => {
-                  setSelectedTags(prev => 
-                    prev.includes(tag) 
-                      ? prev.filter(t => t !== tag)
-                      : [...prev, tag]
-                  );
-                  setCurrentPage(1); // Filtre değiştiğinde ilk sayfaya dön
-                }}
-              />
-              
-              {/* Son Yazılar */}
-              <RecentPosts posts={blogPosts.slice(-3)} />
-              
-              <SocialShare 
-                url={typeof window !== 'undefined' ? window.location.href : ''}
-                title="Hukuk Blogu - Güncel Hukuki Makaleler"
-              />
-            </div>
+        {error ? (
+          <div className="text-center py-12 text-red-500">
+            {error}
           </div>
+        ) : loading ? (
+          <div className="text-center py-12">Yükleniyor...</div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Sol Sidebar */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-4 space-y-8">
+                {/* Etiket Filtreleme */}
+                <TagFilter 
+                  tags={allTags}
+                  selectedTags={selectedTags}
+                  onTagSelect={(tag) => {
+                    setSelectedTags(prev => 
+                      prev.includes(tag) 
+                        ? prev.filter(t => t !== tag)
+                        : [...prev, tag]
+                    );
+                    setCurrentPage(1);
+                  }}
+                />
+                
+                {/* Son Yazılar */}
+                <RecentPosts posts={blogPosts
+                  .filter(post => post?.attributes)
+                  .slice(-3)
+                  .map(post => ({
+                    id: post.id,
+                    title: post.attributes.title,
+                    date: post.attributes.date,
+                    image: post.attributes.image?.data?.attributes?.url || ''
+                  }))} />
+                
+                <SocialShare 
+                  url={shareUrl}
+                  title="Hukuk Blogu - Güncel Hukuki Makaleler"
+                />
+              </div>
+            </div>
 
-          {/* Ana Blog İçeriği */}
-          <div className="lg:col-span-3 space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {currentPosts.map(post => (
-                <BlogCard key={post.id} post={post} />
-              ))}
+            {/* Ana Blog İçeriği */}
+            <div className="lg:col-span-3 space-y-8">
+              {blogPosts.length === 0 ? (
+                <div className="text-center py-12">
+                  Henüz blog yazısı bulunmamaktadır.
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {currentPosts.map(post => (
+                      <BlogCard 
+                        key={post.id} 
+                        post={{
+                          id: post.id,
+                          title: post.attributes.title,
+                          excerpt: post.attributes.excerpt,
+                          author: post.attributes.author,
+                          date: post.attributes.date,
+                          readTime: post.attributes.readTime,
+                          tags: post.attributes.tags || [],
+                          image: post.attributes.image?.data?.attributes?.url || ''
+                        }} 
+                      />
+                    ))}
+                  </div>
+                  
+                  {/* Sayfalama */}
+                  {totalPages > 1 && (
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={(page) => {
+                        setCurrentPage(page);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                    />
+                  )}
+                </>
+              )}
             </div>
-            
-            {/* Sayfalama */}
-            {totalPages > 1 && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={(page) => {
-                  setCurrentPage(page);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-              />
-            )}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
