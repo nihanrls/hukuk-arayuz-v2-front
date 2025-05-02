@@ -32,8 +32,8 @@ export interface BlogPost {
 
 export const getBlogPosts = async (page = 1, pageSize = 6) => {
   try {
-    console.log('Making API call to:', `${STRAPI_API_URL}/api/blog-posts`);
-    const response = await api.get(`/api/blog-posts`, {
+    console.log('Making API call to:', `${STRAPI_API_URL}/api/blog_posts?populate*`);
+    const response = await api.get(`/api/blog_posts?populate*`, {
       params: {
         'pagination[page]': page,
         'pagination[pageSize]': pageSize,
@@ -69,7 +69,7 @@ export const getBlogPosts = async (page = 1, pageSize = 6) => {
 
 export const getBlogPostBySlug = async (slug: string) => {
   try {
-    const response = await api.get(`/api/blog-posts`, {
+    const response = await api.get(`/api/blog_posts?populate*`, {
       params: {
         'filters[slug][$eq]': slug,
         'populate': '*'
