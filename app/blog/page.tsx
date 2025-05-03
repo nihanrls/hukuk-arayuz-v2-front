@@ -7,6 +7,7 @@ import RecentPosts from '../../components/blog/recentposts';
 import Pagination from '../../components/blog/pagination';
 import SocialShare from '../../components/blog/socialshare';
 import { getBlogPosts, BlogPost } from '../../lib/api';
+import axios from 'axios';
 
 const POSTS_PER_PAGE = 6;
 
@@ -25,33 +26,28 @@ const BlogPage = () => {
       try {
         setLoading(true);
         setError(null);
-        console.log('Fetching blog posts...');
         const response = await getBlogPosts(currentPage, POSTS_PER_PAGE);
-        console.log('API Response:', response);
         
         if (!response || !response.data) {
           throw new Error('No data received from server');
         }
 
-        // Validate the data structure
-        const validPosts = response.data.filter((post: BlogPost) => 
-          post && 
-          post.id && 
-          post.attributes && 
-          post.attributes.title
-        );
-
-        if (validPosts.length === 0) {
-          console.log('No valid blog posts found');
-          setBlogPosts([]);
-        } else {
-          setBlogPosts(validPosts);
-        }
-
+        console.log('Blog posts received:', response.data);
+        setBlogPosts(response.data);
         setTotalPages(response.meta?.pagination?.pageCount || 1);
       } catch (error) {
-        console.error('Error fetching blog posts:', error);
-        setError('Blog yazıları yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+        console.error('Error in blog page:', error);
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status === 500) {
+            setError('Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.');
+          } else if (error.response?.status === 404) {
+            setError('Blog yazıları bulunamadı.');
+          } else {
+            setError('Blog yazıları yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+          }
+        } else {
+          setError('Blog yazıları yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+        }
         setBlogPosts([]);
       } finally {
         setLoading(false);
@@ -62,7 +58,9 @@ const BlogPage = () => {
   }, [currentPage]);
 
   useEffect(() => {
-    setShareUrl(window.location.href);
+    if (typeof window !== 'undefined') {
+      setShareUrl(window.location.href);
+    }
   }, []);
 
   // Filtrelenmiş blogları al

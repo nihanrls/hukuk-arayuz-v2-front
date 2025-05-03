@@ -32,18 +32,20 @@ export interface BlogPost {
 
 export const getBlogPosts = async (page = 1, pageSize = 6) => {
   try {
-    console.log('Making API call to:', `${STRAPI_API_URL}/api/blog_posts?populate*`);
-    const response = await api.get(`/api/blog_posts?populate*`, {
+    console.log('API URL:', STRAPI_API_URL);
+    console.log('Making API call to:', `${STRAPI_API_URL}/api/blog-posts?populate*`);
+    
+    const response = await api.get(`/api/blog-posts?populate*`, {
       params: {
-        'pagination[page]': page,
-        'pagination[pageSize]': pageSize,
         'populate': '*'
       }
     });
-    console.log('Raw API response:', response);
 
-    // Strapi v4 response format kontrolü
+    console.log('API Response Status:', response.status);
+    console.log('API Response Data:', response.data);
+
     if (!response.data || !response.data.data) {
+      console.error('Invalid response format:', response.data);
       throw new Error('Invalid response format from Strapi');
     }
 
@@ -53,23 +55,25 @@ export const getBlogPosts = async (page = 1, pageSize = 6) => {
     };
   } catch (error) {
     console.error('Error fetching blog posts:', error);
-    return {
-      data: [],
-      meta: {
-        pagination: {
-          page: 1,
-          pageSize: 6,
-          pageCount: 1,
-          total: 0
+    if (axios.isAxiosError(error)) {
+      console.error('Axios error details:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          headers: error.config?.headers
         }
-      }
-    };
+      });
+    }
+    throw error; // Hatayı yukarı fırlat
   }
 };
 
 export const getBlogPostBySlug = async (slug: string) => {
   try {
-    const response = await api.get(`/api/blog_posts?populate*`, {
+    const response = await api.get(`/api/blog-posts?populate*`, {
       params: {
         'filters[slug][$eq]': slug,
         'populate': '*'
