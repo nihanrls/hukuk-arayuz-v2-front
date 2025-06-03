@@ -59,12 +59,12 @@ const FAQItem: React.FC<{
         >
           {isOpen ? (
             <>
-              Show Less
+              Daha Az Göster
               <IoRemove size={20} className="ml-2" />
             </>
           ) : (
             <>
-              Read More
+              Daha Fazla Göster
               <IoAdd size={20} className="ml-2" />
             </>
           )}
@@ -110,15 +110,15 @@ const FAQ: React.FC = () => {
           <h4 className="text-[#6454a4] text-sm font-medium uppercase tracking-wider mb-4">
             SIKÇA SORULAN SORULAR
           </h4>
-          <h2 className="text-4xl font-bold mb-8">
-            Siz sorun? Biz <span className="italic">cevaplayalım</span>
+          <h2 className="text-4xl font-bold mb-8 text-[#111C30]">
+            Siz sorun? Biz <span className="italic">cevaplayalım.</span>
           </h2>
           
           {/* Search Bar */}
           <div className="max-w-xl mx-auto relative mb-12">
             <input
               type="text"
-              placeholder="Search questions..."
+              placeholder="Sorularınızı arayın..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full px-6 py-4 pl-12 rounded-xl border border-gray-200 focus:outline-none focus:border-[#6454a4] focus:ring-1 focus:ring-[#6454a4] transition-all duration-300 text-gray-800 placeholder-gray-400"
@@ -132,7 +132,7 @@ const FAQ: React.FC = () => {
         <div className="max-w-3xl mx-auto">
           {filteredFAQs.length === 0 ? (
             <div className="text-center text-gray-500 py-8">
-              No questions found matching your search.
+              Aradığınız soru bulunamadı.
             </div>
           ) : (
             <div className="space-y-4">

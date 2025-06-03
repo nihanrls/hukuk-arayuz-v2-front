@@ -59,7 +59,7 @@ const ClientSupport = () => {
         </p>
         <button 
           onClick={handleContactClick} 
-          className="text-left bg-red-600 text-white py-2 px-4 rounded transition duration-300 hover:bg-red-700"
+          className="text-left bg-[#111C30] text-white py-2 px-4 rounded transition duration-300 hover:bg-[#4352A5]"
         >
           Bize Ulaşın
         </button>

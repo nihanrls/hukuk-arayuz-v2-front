@@ -2,8 +2,16 @@
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { motion } from 'framer-motion';
+
 const ConsultForm = () => {
   const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    subject: '',
+    content: ''
+  });
+
+  const [errors, setErrors] = useState({
     fullName: '',
     email: '',
     subject: '',
@@ -18,27 +26,46 @@ const ConsultForm = () => {
     return emailRegex.test(email);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Form doğrulama
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = {
+      fullName: '',
+      email: '',
+      subject: '',
+      content: ''
+    };
+
     if (!formData.fullName.trim()) {
-      toast.error('Lütfen adınızı ve soyadınızı giriniz');
-      return;
+      newErrors.fullName = 'Ad Soyad alanı zorunludur';
+      isValid = false;
     }
 
-    if (!isValidEmail(formData.email)) {
-      toast.error('Lütfen geçerli bir e-posta adresi giriniz');
-      return;
+    if (!formData.email.trim()) {
+      newErrors.email = 'E-posta alanı zorunludur';
+      isValid = false;
+    } else if (!isValidEmail(formData.email)) {
+      newErrors.email = 'Geçerli bir e-posta adresi giriniz';
+      isValid = false;
     }
 
     if (!formData.subject.trim()) {
-      toast.error('Lütfen danışmanlık konusunu giriniz');
-      return;
+      newErrors.subject = 'Danışmanlık konusu zorunludur';
+      isValid = false;
     }
 
     if (!formData.content.trim()) {
-      toast.error('Lütfen içerik giriniz');
+      newErrors.content = 'İçerik alanı zorunludur';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
       return;
     }
 
@@ -66,6 +93,14 @@ const ConsultForm = () => {
         content: ''
       });
 
+      // Hata mesajlarını sıfırla
+      setErrors({
+        fullName: '',
+        email: '',
+        subject: '',
+        content: ''
+      });
+
       toast.success('Form başarıyla gönderildi!');
     } catch (error) {
       toast.error('Bir hata oluştu. Lütfen tekrar deneyiniz.');
@@ -77,9 +112,9 @@ const ConsultForm = () => {
   return (
     <motion.div 
       className="w-full bg-[#f5f5f0] py-12"
-      initial={{ opacity: 0, y: 20 }} // Başlangıç durumu
-      animate={{ opacity: 1, y: 0 }} // Animasyon durumu
-      transition={{ duration: 0.5 }} // Geçiş süresi
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
     >
       <div className="max-w-4xl mx-auto px-4">
         <div className="bg-white rounded-lg shadow-lg p-8">
@@ -102,10 +137,20 @@ const ConsultForm = () => {
                   type="text"
                   id="fullName"
                   value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md text-black"
+                  onChange={(e) => {
+                    setFormData({ ...formData, fullName: e.target.value });
+                    if (errors.fullName) {
+                      setErrors({ ...errors, fullName: '' });
+                    }
+                  }}
+                  className={`w-full px-4 py-2 border rounded-md text-black ${
+                    errors.fullName ? 'border-red-500' : 'border-gray-300'
+                  }`}
                   placeholder="Adınız ve Soyadınız"
                 />
+                {errors.fullName && (
+                  <p className="mt-1 text-sm text-red-500">{errors.fullName}</p>
+                )}
               </div>
 
               <div>
@@ -116,10 +161,20 @@ const ConsultForm = () => {
                   type="email"
                   id="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md text-black"
+                  onChange={(e) => {
+                    setFormData({ ...formData, email: e.target.value });
+                    if (errors.email) {
+                      setErrors({ ...errors, email: '' });
+                    }
+                  }}
+                  className={`w-full px-4 py-2 border rounded-md text-black ${
+                    errors.email ? 'border-red-500' : 'border-gray-300'
+                  }`}
                   placeholder="ornek@email.com"
                 />
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+                )}
               </div>
             </div>
 
@@ -131,10 +186,20 @@ const ConsultForm = () => {
                 type="text"
                 id="subject"
                 value={formData.subject}
-                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md text-black"
+                onChange={(e) => {
+                  setFormData({ ...formData, subject: e.target.value });
+                  if (errors.subject) {
+                    setErrors({ ...errors, subject: '' });
+                  }
+                }}
+                className={`w-full px-4 py-2 border rounded-md text-black ${
+                  errors.subject ? 'border-red-500' : 'border-gray-300'
+                }`}
                 placeholder="Danışmanlık almak istediğiniz konu"
               />
+              {errors.subject && (
+                <p className="mt-1 text-sm text-red-500">{errors.subject}</p>
+              )}
             </div>
 
             <div>
@@ -144,11 +209,21 @@ const ConsultForm = () => {
               <textarea
                 id="content"
                 value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, content: e.target.value });
+                  if (errors.content) {
+                    setErrors({ ...errors, content: '' });
+                  }
+                }}
                 rows={5}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md text-black"
+                className={`w-full px-4 py-2 border rounded-md text-black ${
+                  errors.content ? 'border-red-500' : 'border-gray-300'
+                }`}
                 placeholder="Lütfen danışmanlık almak istediğiniz konu hakkında detaylı bilgi veriniz"
               />
+              {errors.content && (
+                <p className="mt-1 text-sm text-red-500">{errors.content}</p>
+              )}
             </div>
 
             <button
