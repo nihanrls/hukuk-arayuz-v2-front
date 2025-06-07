@@ -3,15 +3,16 @@ import { createClient } from '@/utils/supabase/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const supabase = await createClient();
     
     const { data: aboutSection, error } = await supabase
       .from('about')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
     
     if (error) {
@@ -36,9 +37,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { title, content, image_url, section, order_index, is_active } = body;
     
@@ -61,7 +63,7 @@ export async function PUT(
         order_index: order_index || 0,
         is_active: is_active ?? true
       })
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single();
     
@@ -87,15 +89,16 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const supabase = await createClient();
     
     const { error } = await supabase
       .from('about')
       .delete()
-      .eq('id', params.id);
+      .eq('id', id);
     
     if (error) {
       throw error;

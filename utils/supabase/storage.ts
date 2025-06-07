@@ -1,106 +1,119 @@
 import { createClient } from './client';
 
-const supabase = createClient();
+// Client-side storage operations
+export const clientStorage = {
+  async uploadImage(file: File, bucket: string = 'blog-images'): Promise<string | null> {
+    try {
+      console.log('🚀 Client-side upload başlatılıyor:', file.name, 'Boyut:', file.size);
+      
+      const supabase = createClient();
+      
+      // Dosya boyutu kontrolü (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        console.error('❌ Dosya çok büyük:', file.size);
+        throw new Error('Dosya boyutu 5MB\'dan küçük olmalıdır');
+      }
+      
+      // Dosya tipi kontrolü
+      if (!file.type.startsWith('image/')) {
+        console.error('❌ Geçersiz dosya tipi:', file.type);
+        throw new Error('Sadece görsel dosyaları yüklenebilir');
+      }
+      
+      // Benzersiz dosya adı oluştur
+      const fileExt = file.name.split('.').pop()?.toLowerCase();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      
+      console.log('📝 Oluşturulan dosya adı:', fileName);
+      
+      // Dosyayı yükle
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false,
+          contentType: file.type
+        });
 
-// Test Supabase connection
-export const testSupabaseConnection = async (): Promise<boolean> => {
-  try {
-    console.log('Testing Supabase connection...');
-    const { data, error } = await supabase.storage.listBuckets();
-    
-    if (error) {
-      console.error('Supabase connection test failed:', error);
+      if (error) {
+        console.error('❌ Upload hatası:', error);
+        throw error;
+      }
+
+      console.log('✅ Upload başarılı:', data);
+
+      // Public URL al
+      const { data: { publicUrl } } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(fileName);
+
+      console.log('🔗 Public URL:', publicUrl);
+      return publicUrl;
+      
+    } catch (error) {
+      console.error('💥 Upload error:', error);
+      throw error;
+    }
+  },
+
+  async deleteImage(url: string, bucket: string = 'blog-images'): Promise<boolean> {
+    try {
+      const supabase = createClient();
+      
+      // URL'den dosya adını çıkar
+      const urlParts = url.split('/');
+      const fileName = urlParts[urlParts.length - 1];
+      
+      if (!fileName) {
+        console.error('❌ Dosya adı URL\'den çıkarılamadı:', url);
+        return false;
+      }
+
+      const { error } = await supabase.storage
+        .from(bucket)
+        .remove([fileName]);
+
+      if (error) {
+        console.error('❌ Delete error:', error);
+        return false;
+      }
+
+      console.log('✅ Dosya silindi:', fileName);
+      return true;
+    } catch (error) {
+      console.error('💥 Delete error:', error);
       return false;
     }
-    
-    console.log('Supabase connection successful. Available buckets:', data);
-    return true;
-  } catch (error) {
-    console.error('Supabase connection test error:', error);
-    return false;
-  }
-};
+  },
 
-export const uploadImage = async (file: File, bucket: string = 'blog-images'): Promise<string | null> => {
-  try {
-    console.log('Starting upload for file:', file.name, 'Size:', file.size);
-    
-    // Bucket'ın var olup olmadığını kontrol et
-    const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
-    if (bucketError) {
-      console.error('Error listing buckets:', bucketError);
-      return null;
-    }
-    
-    const bucketExists = buckets?.some(b => b.name === bucket);
-    if (!bucketExists) {
-      console.error(`Bucket '${bucket}' does not exist. Available buckets:`, buckets?.map(b => b.name));
-      console.error('Please create the bucket manually in Supabase dashboard or use the Setup Storage API');
-      return null;
-    }
-    
-    // Dosya adını benzersiz yap
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-    
-    console.log('Generated filename:', fileName);
-    
-    // Dosyayı yükle
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
-
-    if (error) {
-      console.error('Supabase upload error:', error);
-      console.error('Error details:', {
-        message: error.message,
-        name: error.name
-      });
-      return null;
-    }
-
-    console.log('Upload successful:', data);
-
-    // Public URL'i al
-    const { data: { publicUrl } } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(fileName);
-
-    console.log('Generated public URL:', publicUrl);
-    return publicUrl;
-  } catch (error) {
-    console.error('Upload error:', error);
-    return null;
-  }
-};
-
-export const deleteImage = async (url: string, bucket: string = 'blog-images'): Promise<boolean> => {
-  try {
-    // URL'den dosya adını çıkar
-    const fileName = url.split('/').pop();
-    if (!fileName) return false;
-
-    const { error } = await supabase.storage
-      .from(bucket)
-      .remove([fileName]);
-
-    if (error) {
-      console.error('Delete error:', error);
+  async testConnection(): Promise<boolean> {
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase.storage.listBuckets();
+      
+      if (error) {
+        console.error('❌ Connection test failed:', error);
+        return false;
+      }
+      
+      console.log('✅ Connection successful. Buckets:', data?.map(b => b.name));
+      return true;
+    } catch (error) {
+      console.error('💥 Connection test error:', error);
       return false;
     }
-
-    return true;
-  } catch (error) {
-    console.error('Delete error:', error);
-    return false;
   }
 };
+
+// Server-side storage operations - Bu fonksiyonlar sadece API route'larında kullanılmalı
+
+// Backward compatibility için eski fonksiyonlar
+export const uploadImage = clientStorage.uploadImage;
+export const deleteImage = clientStorage.deleteImage;
+export const testSupabaseConnection = clientStorage.testConnection;
 
 export const getImageUrl = (fileName: string, bucket: string = 'blog-images'): string => {
-  const { data: { publicUrl } } = supabase.storage
+  const { data: { publicUrl } } = createClient().storage
     .from(bucket)
     .getPublicUrl(fileName);
   

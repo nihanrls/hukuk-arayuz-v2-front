@@ -97,6 +97,13 @@ export function BlogManager() {
       
       const method = editingBlog ? 'PUT' : 'POST';
       
+      console.log('🚀 BlogManager Request:', {
+        url,
+        method,
+        editingBlogId: editingBlog?.id,
+        finalFormData: { ...finalFormData, content: finalFormData.content?.substring(0, 50) + '...' }
+      });
+      
       const response = await fetch(url, {
         method,
         headers: {
@@ -203,6 +210,26 @@ export function BlogManager() {
 
       <EnvironmentCheck />
       <StorageSetupGuide />
+      
+      {/* Debug Link */}
+      <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-medium text-blue-800">
+              Görsel Yükleme Sorunları mı Yaşıyorsunuz?
+            </h3>
+            <p className="text-sm text-blue-700 mt-1">
+              Storage kurulumunu test edin ve sorunları giderin.
+            </p>
+          </div>
+          <a
+            href="/admin/debug"
+            className="inline-flex items-center px-3 py-2 border border-blue-300 rounded-md text-sm font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            🔧 Debug & Test
+          </a>
+        </div>
+      </div>
 
       {showForm && (
         <div className="mb-8 bg-gray-50 p-6 rounded-lg">

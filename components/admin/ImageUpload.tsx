@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { toast } from 'react-hot-toast';
 import { FiUpload, FiX, FiImage } from 'react-icons/fi';
-import { uploadImage, deleteImage, testSupabaseConnection } from '@/utils/supabase/storage';
+import { uploadToCloudinary, deleteFromCloudinary } from '@/utils/cloudinary/upload';
 
 interface ImageUploadProps {
   value?: string;
@@ -33,29 +33,9 @@ export function ImageUpload({
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Dosya boyutu kontrolü
-    if (file.size > maxSize * 1024 * 1024) {
-      toast.error(`Dosya boyutu ${maxSize}MB'dan küçük olmalıdır`);
-      return;
-    }
-
-    // Dosya tipi kontrolü
-    if (!file.type.startsWith('image/')) {
-      toast.error('Lütfen geçerli bir görsel dosyası seçin');
-      return;
-    }
-
     setUploading(true);
 
     try {
-      // Supabase bağlantısını test et
-      const connectionTest = await testSupabaseConnection();
-      if (!connectionTest) {
-        toast.error('Supabase bağlantısı kurulamadı. Environment variables\'ları kontrol edin.');
-        setUploading(false);
-        return;
-      }
-
       // Preview oluştur
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -64,22 +44,38 @@ export function ImageUpload({
       reader.readAsDataURL(file);
 
       // Dosyayı yükle
-      console.log('Attempting to upload file:', file.name);
-      const uploadedUrl = await uploadImage(file);
+      console.log('📤 Dosya yükleniyor:', file.name);
+      const uploadedUrl = await uploadToCloudinary(file);
       
       if (uploadedUrl) {
-        console.log('Upload successful, URL:', uploadedUrl);
+        console.log('✅ Upload başarılı:', uploadedUrl);
         onChange(uploadedUrl);
-        toast.success('Görsel başarıyla yüklendi');
+        toast.success('Görsel başarıyla yüklendi! 🎉');
       } else {
-        console.error('Upload failed, no URL returned');
-        toast.error('Storage bucket bulunamadı. Lütfen /admin/debug sayfasından "Setup Storage" butonuna tıklayın.');
-        setPreview(value || null);
+        throw new Error('Upload işlemi başarısız oldu');
       }
     } catch (error) {
-      console.error('Upload error:', error);
-      toast.error('Görsel yüklenirken hata oluştu');
-      setPreview(value || null);
+      console.error('💥 Upload hatası:', error);
+      
+      // Hata mesajını kullanıcı dostu hale getir
+      let errorMessage = 'Görsel yüklenirken hata oluştu';
+      
+      if (error instanceof Error) {
+        if (error.message.includes('Dosya boyutu')) {
+          errorMessage = `Dosya boyutu ${maxSize}MB'dan küçük olmalıdır`;
+        } else if (error.message.includes('Sadece görsel')) {
+          errorMessage = 'Lütfen geçerli bir görsel dosyası seçin';
+                 } else if (error.message.includes('bağlantı') || error.message.includes('connection')) {
+           errorMessage = 'Cloudinary bağlantısı kurulamadı. Environment variables kontrol edin.';
+         } else if (error.message.includes('bucket') || error.message.includes('upload')) {
+           errorMessage = 'Görsel yükleme servisi hatası. Lütfen tekrar deneyin.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      toast.error(errorMessage);
+      setPreview(value || null); // Eski preview'a geri dön
     } finally {
       setUploading(false);
       // Input'u temizle
@@ -92,10 +88,13 @@ export function ImageUpload({
   const handleRemove = async () => {
     if (value) {
       try {
-        await deleteImage(value);
-        toast.success('Görsel silindi');
+        const deleted = await deleteFromCloudinary(value);
+        if (deleted) {
+          toast.success('Görsel silindi 🗑️');
+        }
       } catch (error) {
         console.error('Delete error:', error);
+        toast.error('Görsel silinirken hata oluştu');
       }
     }
     
@@ -137,6 +136,7 @@ export function ImageUpload({
                     onClick={handleClick}
                     disabled={uploading}
                     className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-50 transition-colors"
+                    title="Yeni görsel yükle"
                   >
                     <FiUpload className="w-4 h-4 text-gray-700" />
                   </button>
@@ -145,6 +145,7 @@ export function ImageUpload({
                     onClick={handleRemove}
                     disabled={uploading}
                     className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-50 transition-colors"
+                    title="Görseli kaldır"
                   >
                     <FiX className="w-4 h-4 text-red-500" />
                   </button>
@@ -162,6 +163,7 @@ export function ImageUpload({
               <div className="flex flex-col items-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-2"></div>
                 <p className="text-sm text-gray-600">Yükleniyor...</p>
+                <p className="text-xs text-gray-400 mt-1">Lütfen bekleyin</p>
               </div>
             ) : (
               <div className="flex flex-col items-center">
@@ -170,7 +172,7 @@ export function ImageUpload({
                   Görsel yüklemek için tıklayın
                   <br />
                   <span className="text-xs text-gray-400">
-                    Maksimum {maxSize}MB, JPG, PNG, GIF
+                    Maksimum {maxSize}MB, JPG, PNG, GIF, WebP
                   </span>
                 </p>
               </div>
