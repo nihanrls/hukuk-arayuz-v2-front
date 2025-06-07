@@ -7,6 +7,7 @@ interface RecentPostsProps {
     title: string;
     date: string;
     image: string;
+    slug?: string;
   }[];
 }
 
@@ -18,7 +19,7 @@ const RecentPosts = ({ posts }: RecentPostsProps) => {
       </h3>
       <div className="space-y-4">
         {posts.map(post => (
-          <Link key={post.id} href={`/blog/${post.id}`}>
+          <Link key={post.id} href={`/blog/${post.slug || post.id}`}>
             <div className="flex items-center gap-3 group">
               <div className="relative w-16 h-16 flex-shrink-0">
                 <Image

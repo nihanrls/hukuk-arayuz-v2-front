@@ -55,8 +55,29 @@ export function BlogManager() {
     }
   };
 
+  const generateSlug = (title: string): string => {
+    return title
+      .toLowerCase()
+      .replace(/ğ/g, 'g')
+      .replace(/ü/g, 'u')
+      .replace(/ş/g, 's')
+      .replace(/ı/g, 'i')
+      .replace(/ö/g, 'o')
+      .replace(/ç/g, 'c')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Slug otomatik oluştur (eğer boşsa)
+    const finalFormData = {
+      ...formData,
+      slug: formData.slug || generateSlug(formData.title)
+    };
     
     try {
       const url = editingBlog 
@@ -70,7 +91,7 @@ export function BlogManager() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(finalFormData),
       });
       
       const data = await response.json();
@@ -183,7 +204,15 @@ export function BlogManager() {
                   type="text"
                   required
                   value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  onChange={(e) => {
+                    const newTitle = e.target.value;
+                    setFormData({ 
+                      ...formData, 
+                      title: newTitle,
+                      // Slug boşsa otomatik oluştur
+                      slug: formData.slug || generateSlug(newTitle)
+                    });
+                  }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
@@ -248,7 +277,11 @@ export function BlogManager() {
                   value={formData.slug}
                   onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="URL için kullanılacak (otomatik oluşturulur)"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Boş bırakılırsa başlıktan otomatik oluşturulur
+                </p>
               </div>
             </div>
 
@@ -307,6 +340,11 @@ export function BlogManager() {
                         {blog.is_published ? 'Yayında' : 'Taslak'}
                       </span>
                     </div>
+                    {blog.slug && (
+                      <div className="mt-1 text-xs text-blue-600">
+                        URL: /blog/{blog.slug}
+                      </div>
+                    )}
                     {blog.excerpt && (
                       <p className="mt-2 text-sm text-gray-600 line-clamp-2">
                         {blog.excerpt}

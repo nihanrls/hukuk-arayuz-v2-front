@@ -12,6 +12,7 @@ interface BlogCardProps {
     readTime: string;
     tags: string[];
     image: string;
+    slug?: string;
   };
 }
 
@@ -24,7 +25,7 @@ const BlogCard = ({ post }: BlogCardProps) => {
       transition={{ duration: 0.5 }}
       className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
     >
-      <Link href={`/blog/${post.id}`}>
+      <Link href={`/blog/${post.slug || post.id}`}>
         <div className="relative h-48">
           <Image
             src={post.image}

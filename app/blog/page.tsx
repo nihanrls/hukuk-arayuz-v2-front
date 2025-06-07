@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import BlogCard from '../../components/blog/blogcard';
 import TagFilter from '../../components/blog/tagfilter';
@@ -7,98 +7,118 @@ import RecentPosts from '../../components/blog/recentposts';
 import Pagination from '../../components/blog/pagination';
 import SocialShare from '../../components/blog/socialshare';
 
-// Örnek veri
-const tags = [
-  "Ceza Hukuku", "Medeni Hukuk", "İş Hukuku", "Miras Hukuku", 
-  "Borçlar Hukuku", "Ticaret Hukuku", "İdare Hukuku"
-];
+// Blog post interface
+interface BlogPost {
+  id: string;
+  title: string;
+  content: string;
+  excerpt?: string;
+  image_url?: string;
+  author?: string;
+  slug?: string;
+  is_published: boolean;
+  tags?: string[];
+  created_at: string;
+  updated_at: string;
+}
 
-const blogPosts = [
-  {
-    id: 1,
-    title: "İş Sözleşmesinin Feshi ve Haklar",
-    excerpt: "İş sözleşmesinin feshi durumunda işçi ve işveren hakları nelerdir? Detaylı hukuki analiz...",
-    author: "Av. Mehmet Yılmaz",
-    date: "2024-03-15",
-    readTime: "8 dk",
-    tags: ["İş Hukuku", "Sözleşmeler"],
-    image: "/blog-images/is-hukuku.jpg"
-  },
-  {
-    id: 2,
-    title: "Ceza Davalarında Zamanaşımı Süreleri",
-    excerpt: "Ceza davalarında zamanaşımı süreleri nelerdir? Hangi durumlarda zamanaşımı uygulanır?",
-    author: "Av. Ahmet Demir",
-    date: "2024-03-10",
-    readTime: "6 dk",
-    tags: ["Ceza Hukuku"],
-    image: "/blog-images/ceza-hukuku.jpg"
-  },
-  {
-    id: 3,
-    title: "Aile Hukuku ve Boşanma Süreci",
-    excerpt: "Boşanma süreci nasıl işler? Aile hukuku kapsamında haklarınız nelerdir?",
-    author: "Av. Elif Kaya",
-    date: "2024-03-05",
-    readTime: "7 dk",
-    tags: ["Medeni Hukuk"],
-    image: "/blog-images/medeni-hukuk.jpg"
-  },
-  {
-    id: 4,
-    title: "Miras Hukuku: Mirasın Paylaşımı",
-    excerpt: "Miras paylaşımı nasıl yapılır? Miras hukuku kapsamında dikkat edilmesi gerekenler.",
-    author: "Av. Selin Yıldız",
-    date: "2024-02-28",
-    readTime: "5 dk",
-    tags: ["Medeni Hukuk"],
-    image: "/blog-images/miras-hukuku.jpg"
-  },
-  {
-    id: 5,
-    title: "Ticaret Hukuku ve Sözleşmeler",
-    excerpt: "Ticaret hukuku kapsamında sözleşmelerin önemi ve geçerlilik şartları.",
-    author: "Av. Canan Çelik",
-    date: "2024-02-20",
-    readTime: "9 dk",
-    tags: ["Ticaret Hukuku"],
-    image: "/blog-images/ticaret-hukuku.jpg"
-  },
-  {
-    id: 6,
-    title: "İdare Hukuku: İdari İşlemler",
-    excerpt: "İdari işlemler nelerdir? İdare hukuku kapsamında haklarınız.",
-    author: "Av. Oğuzhan Arslan",
-    date: "2024-02-15",
-    readTime: "6 dk",
-    tags: ["İdare Hukuku"],
-    image: "/blog-images/idare-hukuku.jpg"
-  },
-  {
-    id: 7,
-    title: "Miras Hukuku: Mirasın Paylaşımı",
-    excerpt: "Miras paylaşımı nasıl yapılır? Miras hukuku kapsamında dikkat edilmesi gerekenler.",
-    author: "Av. Selin Yıldız",
-    date: "2024-02-28",
-    readTime: "5 dk",
-    tags: ["Medeni Hukuk"],
-    image: "/blog-images/miras-hukuku.jpg"
-  }
-];
+// BlogCard için uyumlu format
+interface BlogCardPost {
+  id: number;
+  title: string;
+  excerpt: string;
+  author: string;
+  date: string;
+  readTime: string;
+  tags: string[];
+  image: string;
+  slug?: string;
+}
+
+// RecentPosts için uyumlu format
+interface RecentPost {
+  id: number;
+  title: string;
+  date: string;
+  image: string;
+  slug?: string;
+}
 
 const POSTS_PER_PAGE = 6;
+
+// Okuma süresi hesaplama fonksiyonu
+const calculateReadTime = (content: string): string => {
+  const wordsPerMinute = 200;
+  const words = content.split(' ').length;
+  const minutes = Math.ceil(words / wordsPerMinute);
+  return `${minutes} dk`;
+};
+
+// BlogPost'u BlogCardPost formatına çevirme
+const convertToBlogCardPost = (post: BlogPost): BlogCardPost => ({
+  id: parseInt(post.id.replace(/-/g, '').substring(0, 8), 16), // UUID'yi number'a çevir
+  title: post.title,
+  excerpt: post.excerpt || post.content.substring(0, 150) + '...',
+  author: post.author || 'Anonim',
+  date: new Date(post.created_at).toLocaleDateString('tr-TR'),
+  readTime: calculateReadTime(post.content),
+  tags: post.tags || [],
+  image: post.image_url || '/blog-images/default.jpg',
+  slug: post.slug
+});
+
+// BlogPost'u RecentPost formatına çevirme
+const convertToRecentPost = (post: BlogPost): RecentPost => ({
+  id: parseInt(post.id.replace(/-/g, '').substring(0, 8), 16), // UUID'yi number'a çevir
+  title: post.title,
+  date: new Date(post.created_at).toLocaleDateString('tr-TR'),
+  image: post.image_url || '/blog-images/default.jpg',
+  slug: post.slug
+});
 
 const BlogPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [allTags, setAllTags] = useState<string[]>([]);
+
+  // Blog yazılarını fetch et
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await fetch('/api/blogs');
+        const data = await response.json();
+        
+        if (data.success) {
+          setBlogPosts(data.data);
+          
+          // Tüm etiketleri topla
+          const tags = new Set<string>();
+          data.data.forEach((post: BlogPost) => {
+            if (post.tags) {
+              post.tags.forEach(tag => tags.add(tag));
+            }
+          });
+          setAllTags(Array.from(tags));
+        }
+      } catch (error) {
+        console.error('Blog yazıları alınırken hata oluştu:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogs();
+  }, []);
 
   // Filtrelenmiş blogları al
   const filteredPosts = blogPosts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
+                         (post.excerpt || post.content).toLowerCase().includes(searchTerm.toLowerCase());
     const matchesTags = selectedTags.length === 0 || 
-                       post.tags.some(tag => selectedTags.includes(tag));
+                       (post.tags && post.tags.some(tag => selectedTags.includes(tag)));
     return matchesSearch && matchesTags;
   });
 
@@ -110,6 +130,22 @@ const BlogPage = () => {
     (currentPage - 1) * POSTS_PER_PAGE,
     currentPage * POSTS_PER_PAGE
   );
+
+  // BlogCard formatına çevir
+  const currentPostsForCard = currentPosts.map(convertToBlogCardPost);
+  const recentPostsForCard = blogPosts.slice(-3).map(convertToRecentPost);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-12">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6454a4]"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -137,9 +173,9 @@ const BlogPage = () => {
             <div className="sticky top-4 space-y-8">
               {/* Etiket Filtreleme */}
               <TagFilter 
-                tags={tags}
+                tags={allTags}
                 selectedTags={selectedTags}
-                onTagSelect={(tag) => {
+                onTagSelect={(tag: string) => {
                   setSelectedTags(prev => 
                     prev.includes(tag) 
                       ? prev.filter(t => t !== tag)
@@ -150,7 +186,7 @@ const BlogPage = () => {
               />
               
               {/* Son Yazılar */}
-              <RecentPosts posts={blogPosts.slice(-3)} />
+              <RecentPosts posts={recentPostsForCard} />
               
               <SocialShare 
                 url={typeof window !== 'undefined' ? window.location.href : ''}
@@ -161,11 +197,21 @@ const BlogPage = () => {
 
           {/* Ana Blog İçeriği */}
           <div className="lg:col-span-3 space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {currentPosts.map(post => (
-                <BlogCard key={post.id} post={post} />
-              ))}
-            </div>
+            {currentPostsForCard.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">
+                  {searchTerm || selectedTags.length > 0 
+                    ? 'Arama kriterlerinize uygun blog yazısı bulunamadı.' 
+                    : 'Henüz blog yazısı bulunmuyor.'}
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {currentPostsForCard.map(post => (
+                  <BlogCard key={post.id} post={post} />
+                ))}
+              </div>
+            )}
             
             {/* Sayfalama */}
             {totalPages > 1 && (
