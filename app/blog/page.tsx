@@ -14,6 +14,7 @@ interface BlogPost {
   content: string;
   excerpt?: string;
   image_url?: string;
+  cover_image?: string;
   author?: string;
   slug?: string;
   is_published: boolean;
@@ -63,7 +64,7 @@ const convertToBlogCardPost = (post: BlogPost): BlogCardPost => ({
   date: new Date(post.created_at).toLocaleDateString('tr-TR'),
   readTime: calculateReadTime(post.content),
   tags: post.tags || [],
-  image: post.image_url || '/blog-images/default.jpg',
+  image: post.cover_image || post.image_url || '/blog-images/default.jpg',
   slug: post.slug
 });
 
@@ -72,7 +73,7 @@ const convertToRecentPost = (post: BlogPost): RecentPost => ({
   id: parseInt(post.id.replace(/-/g, '').substring(0, 8), 16), // UUID'yi number'a çevir
   title: post.title,
   date: new Date(post.created_at).toLocaleDateString('tr-TR'),
-  image: post.image_url || '/blog-images/default.jpg',
+  image: post.cover_image || post.image_url || '/blog-images/default.jpg',
   slug: post.slug
 });
 

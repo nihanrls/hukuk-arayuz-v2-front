@@ -3,16 +3,17 @@ import { createClient } from '@/utils/supabase/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
     const supabase = await createClient();
     
     // Önce slug ile ara
     let { data: blog, error } = await supabase
       .from('blogs')
       .select('*')
-      .eq('slug', params.slug)
+      .eq('slug', slug)
       .eq('is_published', true)
       .single();
     
@@ -21,7 +22,7 @@ export async function GET(
       const { data: blogById, error: errorById } = await supabase
         .from('blogs')
         .select('*')
-        .eq('id', params.slug)
+        .eq('id', slug)
         .eq('is_published', true)
         .single();
       

@@ -226,9 +226,10 @@ const blogPosts = [
   }
 ];
 
-export default function ServicePage({ params }: { params: { slug: string } }) {
-  const service = services[params.slug as keyof typeof services];
-  const details = serviceDetails[params.slug as keyof typeof serviceDetails];
+export default async function ServicePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const service = services[slug as keyof typeof services];
+  const details = serviceDetails[slug as keyof typeof serviceDetails];
   
   if (!service) {
     notFound();
@@ -296,12 +297,12 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
                   Diğer Hizmetler
                 </h3>
                 <div className="space-y-2">
-                  {Object.entries(services).map(([slug, s]) => (
+                  {Object.entries(services).map(([serviceSlug, s]) => (
                     <Link
-                      key={slug}
-                      href={`/hizmetler/${slug}`}
+                      key={serviceSlug}
+                      href={`/hizmetler/${serviceSlug}`}
                       className={`block px-4 py-2 rounded-lg transition-colors ${
-                        slug === params.slug
+                        serviceSlug === slug
                           ? 'bg-[#111C31] text-white'
                           : 'hover:bg-gray-100 text-gray-700'
                       }`}

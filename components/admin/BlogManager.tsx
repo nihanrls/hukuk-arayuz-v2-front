@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { PlusIcon, PencilIcon, TrashIcon } from 'lucide-react';
+import { ImageUpload } from './ImageUpload';
+import { StorageSetupGuide } from './StorageSetupGuide';
+import { EnvironmentCheck } from './EnvironmentCheck';
 
 interface Blog {
   id: string;
@@ -10,6 +13,7 @@ interface Blog {
   content: string;
   excerpt?: string;
   image_url?: string;
+  cover_image?: string;
   author?: string;
   slug?: string;
   is_published: boolean;
@@ -28,6 +32,7 @@ export function BlogManager() {
     content: '',
     excerpt: '',
     image_url: '',
+    cover_image: '',
     author: '',
     slug: '',
     is_published: true,
@@ -72,6 +77,12 @@ export function BlogManager() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Cover image kontrolü
+    if (!formData.cover_image) {
+      toast.error('Cover görseli zorunludur');
+      return;
+    }
     
     // Slug otomatik oluştur (eğer boşsa)
     const finalFormData = {
@@ -142,6 +153,7 @@ export function BlogManager() {
       content: blog.content,
       excerpt: blog.excerpt || '',
       image_url: blog.image_url || '',
+      cover_image: blog.cover_image || '',
       author: blog.author || '',
       slug: blog.slug || '',
       is_published: blog.is_published,
@@ -156,6 +168,7 @@ export function BlogManager() {
       content: '',
       excerpt: '',
       image_url: '',
+      cover_image: '',
       author: '',
       slug: '',
       is_published: true,
@@ -187,6 +200,9 @@ export function BlogManager() {
           Yeni Blog Yazısı
         </button>
       </div>
+
+      <EnvironmentCheck />
+      <StorageSetupGuide />
 
       {showForm && (
         <div className="mb-8 bg-gray-50 p-6 rounded-lg">
@@ -255,34 +271,38 @@ export function BlogManager() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Resim URL
-                </label>
-                <input
-                  type="url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <ImageUpload
+                value={formData.cover_image}
+                onChange={(url) => setFormData({ ...formData, cover_image: url })}
+                label="Cover Görseli (Ana Görsel)"
+                required
+                maxSize={5}
+              />
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Slug
-                </label>
-                <input
-                  type="text"
-                  value={formData.slug}
-                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="URL için kullanılacak (otomatik oluşturulur)"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Boş bırakılırsa başlıktan otomatik oluşturulur
-                </p>
-              </div>
+              <ImageUpload
+                value={formData.image_url}
+                onChange={(url) => setFormData({ ...formData, image_url: url })}
+                label="İçerik Görseli (Opsiyonel)"
+                required={false}
+                maxSize={5}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Slug
+              </label>
+              <input
+                type="text"
+                value={formData.slug}
+                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="URL için kullanılacak (otomatik oluşturulur)"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Boş bırakılırsa başlıktan otomatik oluşturulur
+              </p>
             </div>
 
             <div className="flex items-center">
@@ -322,7 +342,20 @@ export function BlogManager() {
           {blogs.map((blog) => (
             <li key={blog.id}>
               <div className="px-4 py-4 sm:px-6">
-                <div className="flex items-center justify-between">
+                <div className="flex items-start justify-between gap-4">
+                  {/* Cover Image */}
+                  {blog.cover_image && (
+                    <div className="flex-shrink-0">
+                      <div className="relative w-20 h-20 rounded-lg overflow-hidden">
+                        <img
+                          src={blog.cover_image}
+                          alt={blog.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  
                   <div className="flex-1 min-w-0">
                     <h3 className="text-lg font-medium text-gray-900 truncate">
                       {blog.title}
@@ -351,6 +384,7 @@ export function BlogManager() {
                       </p>
                     )}
                   </div>
+                  
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => handleEdit(blog)}

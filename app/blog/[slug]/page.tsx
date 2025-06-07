@@ -15,6 +15,7 @@ interface BlogPost {
   content: string;
   excerpt?: string;
   image_url?: string;
+  cover_image?: string;
   author?: string;
   slug?: string;
   is_published: boolean;
@@ -210,7 +211,7 @@ const BlogDetailPage = () => {
           </motion.div>
 
           {/* Ana Resim */}
-          {blog.image_url && (
+          {(blog.cover_image || blog.image_url) && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -218,7 +219,7 @@ const BlogDetailPage = () => {
               className="relative w-full h-64 lg:h-96 rounded-lg overflow-hidden shadow-lg mb-8"
             >
               <Image
-                src={blog.image_url}
+                src={blog.cover_image || blog.image_url || ''}
                 alt={blog.title}
                 fill
                 className="object-cover"
@@ -310,17 +311,17 @@ const BlogDetailPage = () => {
                     href={`/blog/${relatedBlog.slug || relatedBlog.id}`}
                     className="group"
                   >
-                    <div className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-                      {relatedBlog.image_url && (
-                        <div className="relative h-32">
-                          <Image
-                            src={relatedBlog.image_url}
-                            alt={relatedBlog.title}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        </div>
-                      )}
+                                         <div className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                       {(relatedBlog.cover_image || relatedBlog.image_url) && (
+                         <div className="relative h-32">
+                           <Image
+                             src={relatedBlog.cover_image || relatedBlog.image_url || ''}
+                             alt={relatedBlog.title}
+                             fill
+                             className="object-cover group-hover:scale-105 transition-transform duration-300"
+                           />
+                         </div>
+                       )}
                       
                       <div className="p-4">
                         <h4 className="font-semibold text-[#111C31] group-hover:text-[#6454a4] transition-colors line-clamp-2 mb-2">

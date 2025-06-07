@@ -18,6 +18,9 @@ export class Blog {
   @Column({ type: 'varchar', length: 255, nullable: true })
   image_url?: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  cover_image?: string;
+
   @Column({ type: 'varchar', length: 100, nullable: true })
   author?: string;
 
