@@ -1,36 +1,125 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hukuk Bürosu Web Sitesi
 
-## Getting Started
+Modern ve profesyonel hukuk bürosu web sitesi. Next.js, TypeScript, Tailwind CSS ve PostgreSQL ile geliştirilmiştir.
 
-First, run the development server:
+## Özellikler
 
+- 🏠 Modern ve responsive tasarım
+- 📝 Blog yönetim sistemi
+- 📄 Hakkımda bölümleri yönetimi
+- 🔐 Admin paneli
+- 📱 Mobil uyumlu
+- 🚀 SEO optimizasyonu
+- 💾 PostgreSQL veritabanı desteği
+- 🔧 TypeORM ile veritabanı yönetimi
+
+## Teknolojiler
+
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS
+- **Database**: PostgreSQL, TypeORM
+- **UI Components**: Lucide React, React Hot Toast
+- **Deployment**: Vercel (önerilen)
+
+## Kurulum
+
+1. Projeyi klonlayın:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd hukuk-arayuz-v2-front
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Bağımlılıkları yükleyin:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Environment variables dosyasını oluşturun:
+```bash
+cp .env.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. `.env.local` dosyasını düzenleyerek veritabanı bilgilerinizi girin:
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+DB_NAME=your_database_name
+```
 
-## Learn More
+5. Veritabanı tablolarını oluşturun:
+```sql
+-- lib/database/migrations/001_initial_schema.sql dosyasındaki SQL komutlarını çalıştırın
+```
 
-To learn more about Next.js, take a look at the following resources:
+6. Development server'ı başlatın:
+```bash
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+7. Tarayıcınızda [http://localhost:3000](http://localhost:3000) adresini açın.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Admin Paneli
 
-## Deploy on Vercel
+Admin paneline erişmek için `/admin` sayfasını ziyaret edin. Admin panelinde:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Blog yazılarını oluşturabilir, düzenleyebilir ve silebilirsiniz
+- Hakkımda bölümlerini yönetebilirsiniz
+- İçeriklerin sırasını değiştirebilirsiniz
+- Yayın durumlarını kontrol edebilirsiniz
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## API Endpoints
+
+### Public Endpoints
+- `GET /api/blogs` - Yayınlanmış blog yazılarını listeler
+- `GET /api/about` - Aktif hakkımda bölümlerini listeler
+
+### Admin Endpoints
+- `GET/POST /api/admin/blogs` - Blog CRUD işlemleri
+- `GET/PUT/DELETE /api/admin/blogs/[id]` - Tek blog işlemleri
+- `GET/POST /api/admin/about` - Hakkımda CRUD işlemleri
+- `GET/PUT/DELETE /api/admin/about/[id]` - Tek hakkımda bölümü işlemleri
+
+## Veritabanı Yapısı
+
+### Blogs Tablosu
+- `id` (UUID) - Primary key
+- `title` (VARCHAR) - Blog başlığı
+- `content` (TEXT) - Blog içeriği
+- `excerpt` (VARCHAR) - Kısa özet
+- `image_url` (VARCHAR) - Resim URL'i
+- `author` (VARCHAR) - Yazar adı
+- `slug` (VARCHAR) - URL slug
+- `is_published` (BOOLEAN) - Yayın durumu
+- `tags` (TEXT[]) - Etiketler
+- `created_at` (TIMESTAMP) - Oluşturulma tarihi
+- `updated_at` (TIMESTAMP) - Güncellenme tarihi
+
+### About Tablosu
+- `id` (UUID) - Primary key
+- `title` (VARCHAR) - Bölüm başlığı
+- `content` (TEXT) - Bölüm içeriği
+- `image_url` (VARCHAR) - Resim URL'i
+- `section` (VARCHAR) - Bölüm kategorisi
+- `order_index` (INTEGER) - Sıralama
+- `is_active` (BOOLEAN) - Aktiflik durumu
+- `created_at` (TIMESTAMP) - Oluşturulma tarihi
+- `updated_at` (TIMESTAMP) - Güncellenme tarihi
+
+## Deployment
+
+Projeyi Vercel'e deploy etmek için:
+
+1. GitHub'a push edin
+2. Vercel hesabınızla bağlayın
+3. Environment variables'ları Vercel dashboard'unda ayarlayın
+4. Deploy edin
+
+## Katkıda Bulunma
+
+1. Fork edin
+2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
+3. Commit edin (`git commit -m 'Add some amazing feature'`)
+4. Push edin (`git push origin feature/amazing-feature`)
+5. Pull Request oluşturun
