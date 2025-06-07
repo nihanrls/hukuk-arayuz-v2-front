@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { toast } from 'react-hot-toast';
 import { FiUpload, FiX, FiImage } from 'react-icons/fi';
-import { uploadToCloudinary, deleteFromCloudinary } from '@/utils/cloudinary/upload';
+import { uploadImage, deleteImage } from '@/utils/supabase/storage';
 
 interface ImageUploadProps {
   value?: string;
@@ -45,7 +45,7 @@ export function ImageUpload({
 
       // Dosyayı yükle
       console.log('📤 Dosya yükleniyor:', file.name);
-      const uploadedUrl = await uploadToCloudinary(file);
+      const uploadedUrl = await uploadImage(file);
       
       if (uploadedUrl) {
         console.log('✅ Upload başarılı:', uploadedUrl);
@@ -65,10 +65,10 @@ export function ImageUpload({
           errorMessage = `Dosya boyutu ${maxSize}MB'dan küçük olmalıdır`;
         } else if (error.message.includes('Sadece görsel')) {
           errorMessage = 'Lütfen geçerli bir görsel dosyası seçin';
-                 } else if (error.message.includes('bağlantı') || error.message.includes('connection')) {
-           errorMessage = 'Cloudinary bağlantısı kurulamadı. Environment variables kontrol edin.';
-         } else if (error.message.includes('bucket') || error.message.includes('upload')) {
-           errorMessage = 'Görsel yükleme servisi hatası. Lütfen tekrar deneyin.';
+        } else if (error.message.includes('bağlantı') || error.message.includes('connection')) {
+          errorMessage = 'Supabase bağlantısı kurulamadı. Environment variables kontrol edin.';
+        } else if (error.message.includes('bucket') || error.message.includes('upload')) {
+          errorMessage = 'Görsel yükleme servisi hatası. Lütfen tekrar deneyin.';
         } else {
           errorMessage = error.message;
         }
@@ -88,7 +88,7 @@ export function ImageUpload({
   const handleRemove = async () => {
     if (value) {
       try {
-        const deleted = await deleteFromCloudinary(value);
+        const deleted = await deleteImage(value);
         if (deleted) {
           toast.success('Görsel silindi 🗑️');
         }
@@ -198,12 +198,9 @@ export function ImageUpload({
         <input
           type="url"
           value={value || ''}
-          onChange={(e) => {
-            onChange(e.target.value);
-            setPreview(e.target.value);
-          }}
-          placeholder="Görsel URL'si girin"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Görsel URL'si girin..."
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
           disabled={uploading}
         />
       </div>

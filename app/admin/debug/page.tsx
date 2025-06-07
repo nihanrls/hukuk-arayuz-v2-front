@@ -7,6 +7,7 @@ import { clientStorage } from '@/utils/supabase/storage';
 export default function DebugPage() {
   const [testing, setTesting] = useState(false);
   const [setupping, setSetuppping] = useState(false);
+  const [cleaning, setCleaning] = useState(false);
   const [testResults, setTestResults] = useState<any>(null);
 
   const testConnection = async () => {
@@ -67,6 +68,35 @@ export default function DebugPage() {
       toast.error('Setup sırasında hata oluştu');
     } finally {
       setSetuppping(false);
+    }
+  };
+
+  const cleanupCloudinary = async () => {
+    setCleaning(true);
+    
+    try {
+      console.log('🧹 Cloudinary URL temizleme başlatılıyor...');
+      const response = await fetch('/api/admin/cleanup-cloudinary', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success(`✅ ${data.message}`);
+        console.log('✅ Temizleme başarılı:', data);
+      } else {
+        toast.error('❌ ' + data.error);
+        console.error('❌ Temizleme başarısız:', data);
+      }
+    } catch (error) {
+      console.error('Cleanup error:', error);
+      toast.error('Temizleme sırasında hata oluştu');
+    } finally {
+      setCleaning(false);
     }
   };
 
@@ -137,6 +167,21 @@ export default function DebugPage() {
                   '🚀 Storage Kurulumu'
                 )}
               </button>
+
+              <button
+                onClick={cleanupCloudinary}
+                disabled={cleaning}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {cleaning ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Temizleniyor...
+                  </>
+                ) : (
+                  '🧹 Cloudinary URL Temizle'
+                )}
+              </button>
             </div>
           </div>
 
@@ -171,6 +216,7 @@ export default function DebugPage() {
               <ol className="list-decimal list-inside space-y-2 text-sm text-blue-800">
                 <li>Önce <strong>"Bağlantıyı Test Et"</strong> butonuna tıklayın</li>
                 <li>Bağlantı başarılıysa <strong>"Storage Kurulumu"</strong> butonuna tıklayın</li>
+                <li>Cloudinary URL hatası alıyorsanız <strong>"Cloudinary URL Temizle"</strong> butonuna tıklayın</li>
                 <li>Kurulum tamamlandıktan sonra blog yönetim sayfasında görsel yüklemeyi deneyin</li>
                 <li>Sorun devam ederse Supabase dashboard'dan manuel bucket oluşturun</li>
               </ol>

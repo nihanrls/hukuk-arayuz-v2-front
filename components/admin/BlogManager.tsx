@@ -1,11 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { toast } from 'react-hot-toast';
-import { PlusIcon, PencilIcon, TrashIcon } from 'lucide-react';
+import { FiPlus, FiEdit2, FiTrash2, FiEye, FiEyeOff, FiSave, FiX, FiImage, FiCalendar, FiSearch } from 'react-icons/fi';
 import { ImageUpload } from './ImageUpload';
-import { StorageSetupGuide } from './StorageSetupGuide';
-import { EnvironmentCheck } from './EnvironmentCheck';
 
 interface Blog {
   id: string;
@@ -22,11 +20,15 @@ interface Blog {
   updated_at: string;
 }
 
+type SortOption = 'newest' | 'oldest' | 'title' | 'author' | 'published' | 'draft';
+
 export function BlogManager() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -42,6 +44,50 @@ export function BlogManager() {
   useEffect(() => {
     fetchBlogs();
   }, []);
+
+  // Filtrelenmiş ve sıralanmış bloglar
+  const filteredAndSortedBlogs = useMemo(() => {
+    let filtered = blogs;
+
+    // Arama filtresi
+    if (searchTerm) {
+      filtered = blogs.filter(blog =>
+        blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        blog.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        blog.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        blog.author?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        blog.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+    }
+
+    // Sıralama
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case 'oldest':
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case 'title':
+          return a.title.localeCompare(b.title, 'tr');
+        case 'author':
+          return (a.author || '').localeCompare(b.author || '', 'tr');
+        case 'published':
+          if (a.is_published === b.is_published) {
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          }
+          return a.is_published ? -1 : 1;
+        case 'draft':
+          if (a.is_published === b.is_published) {
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          }
+          return a.is_published ? 1 : -1;
+        default:
+          return 0;
+      }
+    });
+
+    return sorted;
+  }, [blogs, searchTerm, sortBy]);
 
   const fetchBlogs = async () => {
     try {
@@ -117,8 +163,8 @@ export function BlogManager() {
       if (data.success) {
         toast.success(
           editingBlog 
-            ? 'Blog yazısı güncellendi' 
-            : 'Blog yazısı oluşturuldu'
+            ? 'Blog yazısı güncellendi! 🎉' 
+            : 'Blog yazısı oluşturuldu! 🎉'
         );
         fetchBlogs();
         resetForm();
@@ -185,257 +231,320 @@ export function BlogManager() {
     setShowForm(false);
   };
 
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('tr-TR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const getSortLabel = (option: SortOption) => {
+    switch (option) {
+      case 'newest': return 'En Yeni';
+      case 'oldest': return 'En Eski';
+      case 'title': return 'Başlık (A-Z)';
+      case 'author': return 'Yazar (A-Z)';
+      case 'published': return 'Yayında Olanlar';
+      case 'draft': return 'Taslaklar';
+      default: return 'Sırala';
+    }
+  };
+
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Blog Yazıları ({blogs.length})
-        </h2>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Blog Yazıları</h2>
+          <p className="text-gray-600 mt-1">
+            {filteredAndSortedBlogs.length} / {blogs.length} yazı gösteriliyor
+          </p>
+        </div>
         <button
           onClick={() => setShowForm(true)}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg"
         >
-          <PlusIcon className="h-4 w-4 mr-2" />
+          <FiPlus className="mr-2" />
           Yeni Blog Yazısı
         </button>
       </div>
 
-      <EnvironmentCheck />
-      <StorageSetupGuide />
-      
-      {/* Debug Link */}
-      <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-sm font-medium text-blue-800">
-              Görsel Yükleme Sorunları mı Yaşıyorsunuz?
-            </h3>
-            <p className="text-sm text-blue-700 mt-1">
-              Storage kurulumunu test edin ve sorunları giderin.
-            </p>
-          </div>
-          <a
-            href="/admin/debug"
-            className="inline-flex items-center px-3 py-2 border border-blue-300 rounded-md text-sm font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      {/* Arama ve Filtreleme */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex-1 relative">
+          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <input
+            type="text"
+            placeholder="Blog yazılarında ara... (başlık, içerik, yazar, etiket)"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+          />
+        </div>
+        <div className="sm:w-48">
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as SortOption)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
           >
-            🔧 Debug & Test
-          </a>
+            <option value="newest">En Yeni</option>
+            <option value="oldest">En Eski</option>
+            <option value="title">Başlık (A-Z)</option>
+            <option value="author">Yazar (A-Z)</option>
+            <option value="published">Yayında Olanlar</option>
+            <option value="draft">Taslaklar</option>
+          </select>
         </div>
       </div>
 
+      {/* Arama sonucu bilgisi */}
+      {searchTerm && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p className="text-blue-800">
+            <strong>"{searchTerm}"</strong> araması için {filteredAndSortedBlogs.length} sonuç bulundu.
+            {filteredAndSortedBlogs.length === 0 && (
+              <span className="block mt-1 text-sm">Farklı anahtar kelimeler deneyebilirsiniz.</span>
+            )}
+          </p>
+        </div>
+      )}
+
+      {/* Form Modal */}
       {showForm && (
-        <div className="mb-8 bg-gray-50 p-6 rounded-lg">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">
-            {editingBlog ? 'Blog Yazısını Düzenle' : 'Yeni Blog Yazısı'}
-          </h3>
-          
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Başlık *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.title}
-                  onChange={(e) => {
-                    const newTitle = e.target.value;
-                    setFormData({ 
-                      ...formData, 
-                      title: newTitle,
-                      // Slug boşsa otomatik oluştur
-                      slug: formData.slug || generateSlug(newTitle)
-                    });
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl">
+              <div className="flex justify-between items-center">
+                <h3 className="text-xl font-bold text-gray-900">
+                  {editingBlog ? 'Blog Yazısını Düzenle' : 'Yeni Blog Yazısı'}
+                </h3>
+                <button
+                  onClick={resetForm}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <FiX size={24} />
+                </button>
               </div>
-              
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-6 space-y-6">
+              {/* Başlık ve Slug */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Başlık <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="Blog yazısının başlığı..."
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Slug (URL)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.slug}
+                    onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="url-friendly-slug (otomatik oluşturulur)"
+                  />
+                </div>
+              </div>
+
+              {/* Yazar */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Yazar
                 </label>
                 <input
                   type="text"
                   value={formData.author}
-                  onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  onChange={(e) => setFormData(prev => ({ ...prev, author: e.target.value }))}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Yazarın adı..."
                 />
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Özet
-              </label>
-              <textarea
-                rows={2}
-                value={formData.excerpt}
-                onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
+              {/* Özet */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Özet
+                </label>
+                <textarea
+                  value={formData.excerpt}
+                  onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
+                  rows={3}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Blog yazısının kısa özeti..."
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                İçerik *
-              </label>
-              <textarea
-                rows={8}
-                required
-                value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
+              {/* İçerik */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  İçerik <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={formData.content}
+                  onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                  rows={12}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 font-mono text-sm"
+                  placeholder="Blog yazısının içeriği..."
+                  required
+                />
+              </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <ImageUpload
-                value={formData.cover_image}
-                onChange={(url) => setFormData({ ...formData, cover_image: url })}
-                label="Cover Görseli (Ana Görsel)"
-                required
-                maxSize={5}
-              />
-              
-              <ImageUpload
-                value={formData.image_url}
-                onChange={(url) => setFormData({ ...formData, image_url: url })}
-                label="İçerik Görseli (Opsiyonel)"
-                required={false}
-                maxSize={5}
-              />
-            </div>
+              {/* Görsel Yükleme */}
+              <div>
+                <ImageUpload
+                  value={formData.image_url}
+                  onChange={(url) => setFormData(prev => ({ ...prev, image_url: url }))}
+                  label="Blog Görseli"
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Slug
-              </label>
-              <input
-                type="text"
-                value={formData.slug}
-                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="URL için kullanılacak (otomatik oluşturulur)"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Boş bırakılırsa başlıktan otomatik oluşturulur
-              </p>
-            </div>
+              {/* Yayınlama Durumu */}
+              <div className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  id="is_published"
+                  checked={formData.is_published}
+                  onChange={(e) => setFormData(prev => ({ ...prev, is_published: e.target.checked }))}
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <label htmlFor="is_published" className="text-sm font-medium text-gray-700">
+                  Yayınla
+                </label>
+              </div>
 
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="is_published"
-                checked={formData.is_published}
-                onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="is_published" className="ml-2 block text-sm text-gray-900">
-                Yayınla
-              </label>
-            </div>
-
-            <div className="flex justify-end space-x-3">
-              <button
-                type="button"
-                onClick={resetForm}
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                İptal
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                {editingBlog ? 'Güncelle' : 'Oluştur'}
-              </button>
-            </div>
-          </form>
+              {/* Form Buttons */}
+              <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
+                >
+                  İptal
+                </button>
+                <button
+                  type="submit"
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg"
+                >
+                  <FiSave className="mr-2" />
+                  {editingBlog ? 'Güncelle' : 'Kaydet'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
-      <div className="bg-white shadow overflow-hidden sm:rounded-md">
-        <ul className="divide-y divide-gray-200">
-          {blogs.map((blog) => (
-            <li key={blog.id}>
-              <div className="px-4 py-4 sm:px-6">
-                <div className="flex items-start justify-between gap-4">
-                  {/* Cover Image */}
-                  {blog.cover_image && (
-                    <div className="flex-shrink-0">
-                      <div className="relative w-20 h-20 rounded-lg overflow-hidden">
-                        <img
-                          src={blog.cover_image}
-                          alt={blog.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-medium text-gray-900 truncate">
-                      {blog.title}
-                    </h3>
-                    <div className="mt-1 flex items-center text-sm text-gray-500">
-                      <span>
-                        {blog.author && `${blog.author} • `}
-                        {new Date(blog.created_at).toLocaleDateString('tr-TR')}
-                      </span>
-                      <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+      {/* Blog List */}
+      <div className="grid gap-6">
+        {filteredAndSortedBlogs.length === 0 ? (
+          <div className="text-center py-12 bg-gray-50 rounded-xl">
+            <FiImage className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {searchTerm ? 'Arama sonucu bulunamadı' : 'Henüz blog yazısı yok'}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {searchTerm 
+                ? 'Farklı anahtar kelimeler deneyebilir veya filtreleri temizleyebilirsiniz.'
+                : 'İlk blog yazınızı oluşturmak için yukarıdaki butona tıklayın.'
+              }
+            </p>
+            {!searchTerm && (
+              <button
+                onClick={() => setShowForm(true)}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <FiPlus className="mr-2" />
+                İlk Blog Yazısını Oluştur
+              </button>
+            )}
+          </div>
+        ) : (
+          filteredAndSortedBlogs.map((blog) => (
+            <div key={blog.id} className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="p-6">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <h3 className="text-xl font-bold text-gray-900">{blog.title}</h3>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         blog.is_published 
                           ? 'bg-green-100 text-green-800' 
                           : 'bg-gray-100 text-gray-800'
                       }`}>
-                        {blog.is_published ? 'Yayında' : 'Taslak'}
+                        {blog.is_published ? (
+                          <>
+                            <FiEye className="mr-1" size={12} />
+                            Yayında
+                          </>
+                        ) : (
+                          <>
+                            <FiEyeOff className="mr-1" size={12} />
+                            Taslak
+                          </>
+                        )}
                       </span>
                     </div>
-                    {blog.slug && (
-                      <div className="mt-1 text-xs text-blue-600">
-                        URL: /blog/{blog.slug}
-                      </div>
-                    )}
+                    
                     {blog.excerpt && (
-                      <p className="mt-2 text-sm text-gray-600 line-clamp-2">
-                        {blog.excerpt}
-                      </p>
+                      <p className="text-gray-600 mb-3 line-clamp-2">{blog.excerpt}</p>
                     )}
+                    
+                    <div className="flex items-center text-sm text-gray-500 space-x-4">
+                      {blog.author && (
+                        <span>👤 {blog.author}</span>
+                      )}
+                      <span className="flex items-center">
+                        <FiCalendar className="mr-1" size={14} />
+                        {formatDate(blog.created_at)}
+                      </span>
+                      {blog.slug && (
+                        <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs">
+                          /{blog.slug}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   
-                  <div className="flex items-center space-x-2">
+                  <div className="flex space-x-2 ml-4">
                     <button
                       onClick={() => handleEdit(blog)}
-                      className="p-2 text-gray-400 hover:text-blue-600"
+                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      title="Düzenle"
                     >
-                      <PencilIcon className="h-4 w-4" />
+                      <FiEdit2 size={18} />
                     </button>
                     <button
                       onClick={() => handleDelete(blog.id)}
-                      className="p-2 text-gray-400 hover:text-red-600"
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Sil"
                     >
-                      <TrashIcon className="h-4 w-4" />
+                      <FiTrash2 size={18} />
                     </button>
                   </div>
                 </div>
               </div>
-            </li>
-          ))}
-        </ul>
-        
-        {blogs.length === 0 && (
-          <div className="text-center py-8">
-            <p className="text-gray-500">Henüz blog yazısı bulunmuyor.</p>
-          </div>
+            </div>
+          ))
         )}
       </div>
     </div>
