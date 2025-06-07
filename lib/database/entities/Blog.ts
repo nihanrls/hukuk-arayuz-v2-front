@@ -33,6 +33,9 @@ export class Blog {
   @Column({ type: 'text', array: true, nullable: true })
   tags?: string[];
 
+  @Column({ type: 'uuid', nullable: true })
+  category_id?: string;
+
   @CreateDateColumn()
   created_at!: Date;
 

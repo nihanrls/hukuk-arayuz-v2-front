@@ -72,10 +72,12 @@ export interface Database {
           content: string;
           excerpt: string | null;
           image_url: string | null;
+          cover_image: string | null;
           author: string | null;
           slug: string | null;
           is_published: boolean;
           tags: string[] | null;
+          category_id: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -85,10 +87,12 @@ export interface Database {
           content: string;
           excerpt?: string | null;
           image_url?: string | null;
+          cover_image?: string | null;
           author?: string | null;
           slug?: string | null;
           is_published?: boolean;
           tags?: string[] | null;
+          category_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -98,10 +102,44 @@ export interface Database {
           content?: string;
           excerpt?: string | null;
           image_url?: string | null;
+          cover_image?: string | null;
           author?: string | null;
           slug?: string | null;
           is_published?: boolean;
           tags?: string[] | null;
+          category_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      blog_categories: {
+        Row: {
+          id: string;
+          name: string;
+          slug: string;
+          description: string | null;
+          color: string;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+          description?: string | null;
+          color?: string;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          slug?: string;
+          description?: string | null;
+          color?: string;
+          is_active?: boolean;
           created_at?: string;
           updated_at?: string;
         };

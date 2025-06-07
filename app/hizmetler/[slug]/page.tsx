@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { MarkdownRenderer } from '@/components/MarkdownRenderer';
 import { 
   FiShield, 
   FiUsers, 
@@ -179,10 +180,7 @@ const ServiceDetailPage = () => {
                 transition={{ duration: 0.8, delay: 0.3 }}
                 className="bg-white rounded-2xl shadow-lg p-8"
               >
-                <div 
-                  className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-li:text-gray-600 prose-strong:text-gray-900"
-                  dangerouslySetInnerHTML={{ __html: service.content }}
-                />
+                <MarkdownRenderer content={service.content} />
               </motion.div>
             </div>
 

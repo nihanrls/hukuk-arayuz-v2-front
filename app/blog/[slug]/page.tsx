@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { FiArrowLeft, FiCalendar, FiUser, FiClock, FiShare2 } from 'react-icons/fi';
 import { FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
+import { MarkdownRenderer } from '@/components/MarkdownRenderer';
 
 interface BlogPost {
   id: string;
@@ -234,10 +235,7 @@ const BlogDetailPage = () => {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="bg-white rounded-lg shadow-sm p-8 mb-8"
           >
-            <div 
-              className="prose prose-lg max-w-none text-gray-700 leading-relaxed font-nunito"
-              dangerouslySetInnerHTML={{ __html: blog.content.replace(/\n/g, '<br />') }}
-            />
+            <MarkdownRenderer content={blog.content} />
           </motion.div>
 
           {/* Paylaşım Butonları */}

@@ -5,6 +5,7 @@ import { toast } from 'react-hot-toast';
 import { FiPlus, FiEdit2, FiTrash2, FiSave, FiX, FiSettings, FiEye, FiEyeOff } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import { ImageUpload } from './ImageUpload';
+import { MarkdownEditor } from './MarkdownEditor';
 
 interface Service {
   id: string;
@@ -265,20 +266,14 @@ export function ServiceManager() {
 
               {/* İçerik */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Detaylı İçerik <span className="text-red-500">*</span>
-                </label>
-                <textarea
+                <MarkdownEditor
                   value={formData.content}
-                  onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                  rows={12}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 font-mono text-sm text-black"
-                  placeholder="HTML formatında detaylı içerik..."
+                  onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
+                  label="Detaylı İçerik"
+                  placeholder="Markdown formatında hizmet içeriğini yazın..."
                   required
+                  rows={15}
                 />
-                <p className="text-sm text-gray-500 mt-1">
-                  HTML etiketleri kullanabilirsiniz (h2, h3, p, ul, li, strong, vb.)
-                </p>
               </div>
 
               {/* Icon Seçimi */}

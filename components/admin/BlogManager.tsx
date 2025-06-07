@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { toast } from 'react-hot-toast';
 import { FiPlus, FiEdit2, FiTrash2, FiEye, FiEyeOff, FiSave, FiX, FiImage, FiCalendar, FiSearch } from 'react-icons/fi';
 import { ImageUpload } from './ImageUpload';
+import { MarkdownEditor } from './MarkdownEditor';
 
 interface Blog {
   id: string;
@@ -468,16 +469,13 @@ export function BlogManager() {
 
               {/* İçerik */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  İçerik <span className="text-red-500">*</span>
-                </label>
-                <textarea
+                <MarkdownEditor
                   value={formData.content}
-                  onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                  rows={12}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 font-mono text-sm text-black"
-                  placeholder="Blog yazısının içeriği..."
+                  onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
+                  label="İçerik"
+                  placeholder="Markdown formatında blog içeriğini yazın..."
                   required
+                  rows={15}
                 />
               </div>
 
