@@ -223,11 +223,11 @@ const AboutPage = () => {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.3, delay: index * 0.1 }}
                         className="px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 rounded-full text-sm font-medium border border-blue-200 hover:shadow-md transition-all duration-200"
-                      >
-                        {alan}
+                    >
+                      {alan}
                       </motion.span>
-                    ))}
-                  </div>
+                  ))}
+                </div>
                 </motion.div>
               )}
 
@@ -304,7 +304,7 @@ const AboutPage = () => {
                         <FaFacebookF size={20} />
                       </motion.a>
                     )}
-                  </div>
+              </div>
                 </motion.div>
               )}
             </div>
@@ -401,8 +401,8 @@ const AboutPage = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <h2 className="text-4xl lg:text-5xl font-bold font-[Crimson] text-white mb-4">
-                Hukuki Desteğe mi İhtiyacınız Var?
-              </h2>
+              Hukuki Desteğe mi İhtiyacınız Var?
+            </h2>
               <p className="text-blue-100 text-xl leading-relaxed max-w-2xl mx-auto">
                 Deneyimli hukuk ekibimizle size en iyi hizmeti sunmaya hazırız. 
                 Hukuki sorularınız için hemen iletişime geçin.
@@ -416,7 +416,7 @@ const AboutPage = () => {
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
               <motion.button
-                onClick={handleContactClick}
+              onClick={handleContactClick}
                 className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-10 py-4 rounded-xl text-lg font-semibold 
                          hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-2xl hover:shadow-blue-500/25 
                          transform hover:scale-105 flex items-center gap-3"
