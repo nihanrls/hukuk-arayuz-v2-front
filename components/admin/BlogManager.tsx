@@ -124,12 +124,6 @@ export function BlogManager() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Cover image kontrolü
-    if (!formData.cover_image) {
-      toast.error('Cover görseli zorunludur');
-      return;
-    }
-    
     // Slug otomatik oluştur (eğer boşsa)
     const finalFormData = {
       ...formData,
@@ -287,14 +281,14 @@ export function BlogManager() {
             placeholder="Blog yazılarında ara... (başlık, içerik, yazar, etiket)"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-black"
           />
         </div>
         <div className="sm:w-48">
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortOption)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-black"
           >
             <option value="newest">En Yeni</option>
             <option value="oldest">En Eski</option>
@@ -347,7 +341,7 @@ export function BlogManager() {
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-black"
                     placeholder="Blog yazısının başlığı..."
                     required
                   />
@@ -360,7 +354,7 @@ export function BlogManager() {
                     type="text"
                     value={formData.slug}
                     onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-black"
                     placeholder="url-friendly-slug (otomatik oluşturulur)"
                   />
                 </div>
@@ -371,13 +365,13 @@ export function BlogManager() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Yazar
                 </label>
-                <input
-                  type="text"
-                  value={formData.author}
-                  onChange={(e) => setFormData(prev => ({ ...prev, author: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Yazarın adı..."
-                />
+                                  <input
+                    type="text"
+                    value={formData.author}
+                    onChange={(e) => setFormData(prev => ({ ...prev, author: e.target.value }))}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-black"
+                    placeholder="Yazarın adı..."
+                  />
               </div>
 
               {/* Özet */}
@@ -389,7 +383,7 @@ export function BlogManager() {
                   value={formData.excerpt}
                   onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-black"
                   placeholder="Blog yazısının kısa özeti..."
                 />
               </div>
@@ -403,7 +397,7 @@ export function BlogManager() {
                   value={formData.content}
                   onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
                   rows={12}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 font-mono text-sm"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 font-mono text-sm text-black"
                   placeholder="Blog yazısının içeriği..."
                   required
                 />

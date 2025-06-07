@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-import { FiSave, FiPlus, FiTrash2, FiUser, FiMail, FiPhone, FiBriefcase, FiBook } from 'react-icons/fi';
+import { FiSave, FiPlus, FiTrash2, FiUser, FiMail, FiPhone, FiBriefcase, FiBook, FiEdit3, FiX } from 'react-icons/fi';
 import { ImageUpload } from './ImageUpload';
+import { EditableTimeline } from '@/components/ui/Timeline';
 
 interface CareerItem {
   id: string;
@@ -49,6 +50,9 @@ interface ProfileData {
 export function ProfileManager() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  
+  // Ortak input stil sınıfı
+  const inputClassName = "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-black";
   const [profile, setProfile] = useState<ProfileData>({
     first_name: '',
     last_name: '',
@@ -69,6 +73,27 @@ export function ProfileManager() {
   });
 
   const [newSpecialty, setNewSpecialty] = useState('');
+  const [editingCareer, setEditingCareer] = useState<number | null>(null);
+  const [editingEducation, setEditingEducation] = useState<number | null>(null);
+  const [careerForm, setCareerForm] = useState<CareerItem>({
+    id: '',
+    position: '',
+    company: '',
+    start_date: '',
+    end_date: null,
+    description: '',
+    is_current: false
+  });
+  const [educationForm, setEducationForm] = useState<EducationItem>({
+    id: '',
+    degree: '',
+    school: '',
+    field_of_study: '',
+    start_date: '',
+    end_date: null,
+    description: '',
+    is_current: false
+  });
 
   useEffect(() => {
     fetchProfile();
@@ -202,6 +227,120 @@ export function ProfileManager() {
     }));
   };
 
+  // Timeline helper functions
+  const formatPeriod = (startDate: string, endDate: string | null, isCurrent: boolean) => {
+    const start = new Date(startDate).toLocaleDateString('tr-TR', { year: 'numeric', month: 'short' });
+    if (isCurrent) return `${start} - Devam Ediyor`;
+    if (!endDate) return start;
+    const end = new Date(endDate).toLocaleDateString('tr-TR', { year: 'numeric', month: 'short' });
+    return `${start} - ${end}`;
+  };
+
+  const convertCareerToTimeline = () => {
+    return (profile.career_history || []).map((career, index) => ({
+      id: career.id,
+      title: career.position,
+      subtitle: career.company,
+      period: formatPeriod(career.start_date, career.end_date, career.is_current),
+      description: career.description || undefined,
+      isActive: career.is_current
+    }));
+  };
+
+  const convertEducationToTimeline = () => {
+    return (profile.education_history || []).map((education, index) => ({
+      id: education.id,
+      title: education.degree,
+      subtitle: education.school,
+      period: formatPeriod(education.start_date, education.end_date, education.is_current),
+      description: education.field_of_study ? `${education.field_of_study}${education.description ? ` - ${education.description}` : ''}` : education.description || undefined,
+      isActive: education.is_current
+    }));
+  };
+
+  const handleEditCareer = (index: number) => {
+    const career = profile.career_history?.[index];
+    if (career) {
+      setCareerForm(career);
+      setEditingCareer(index);
+    }
+  };
+
+  const handleEditEducation = (index: number) => {
+    const education = profile.education_history?.[index];
+    if (education) {
+      setEducationForm(education);
+      setEditingEducation(index);
+    }
+  };
+
+  const handleAddCareer = () => {
+    const newCareer: CareerItem = {
+      id: Date.now().toString(),
+      position: '',
+      company: '',
+      start_date: '',
+      end_date: null,
+      description: '',
+      is_current: false
+    };
+    setCareerForm(newCareer);
+    setEditingCareer(-1); // -1 indicates new item
+  };
+
+  const handleAddEducation = () => {
+    const newEducation: EducationItem = {
+      id: Date.now().toString(),
+      degree: '',
+      school: '',
+      field_of_study: '',
+      start_date: '',
+      end_date: null,
+      description: '',
+      is_current: false
+    };
+    setEducationForm(newEducation);
+    setEditingEducation(-1); // -1 indicates new item
+  };
+
+  const saveCareer = () => {
+    if (editingCareer === -1) {
+      // Adding new career
+      setProfile(prev => ({
+        ...prev,
+        career_history: [...(prev.career_history || []), careerForm]
+      }));
+    } else if (editingCareer !== null) {
+      // Editing existing career
+      setProfile(prev => ({
+        ...prev,
+        career_history: prev.career_history?.map((item, i) => 
+          i === editingCareer ? careerForm : item
+        ) || []
+      }));
+    }
+    setEditingCareer(null);
+  };
+
+  const saveEducation = () => {
+    if (editingEducation === -1) {
+      // Adding new education
+      setProfile(prev => ({
+        ...prev,
+        education_history: [...(prev.education_history || []), educationForm]
+      }));
+    } else if (editingEducation !== null) {
+      // Editing existing education
+      setProfile(prev => ({
+        ...prev,
+        education_history: prev.education_history?.map((item, i) => 
+          i === editingEducation ? educationForm : item
+        ) || []
+      }));
+    }
+    setEditingEducation(null);
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -261,7 +400,7 @@ export function ProfileManager() {
                 type="text"
                 value={profile.first_name}
                 onChange={(e) => setProfile(prev => ({ ...prev, first_name: e.target.value }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className={inputClassName}
                 required
               />
             </div>
@@ -274,7 +413,7 @@ export function ProfileManager() {
                 type="text"
                 value={profile.last_name}
                 onChange={(e) => setProfile(prev => ({ ...prev, last_name: e.target.value }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className={inputClassName}
                 required
               />
             </div>
@@ -287,7 +426,7 @@ export function ProfileManager() {
                 type="text"
                 value={profile.title}
                 onChange={(e) => setProfile(prev => ({ ...prev, title: e.target.value }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className={inputClassName}
                 placeholder="Av."
                 required
               />
@@ -302,7 +441,7 @@ export function ProfileManager() {
                 type="email"
                 value={profile.email}
                 onChange={(e) => setProfile(prev => ({ ...prev, email: e.target.value }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className={inputClassName}
                 required
               />
             </div>
@@ -316,7 +455,7 @@ export function ProfileManager() {
                 type="tel"
                 value={profile.phone || ''}
                 onChange={(e) => setProfile(prev => ({ ...prev, phone: e.target.value }))}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className={inputClassName}
               />
             </div>
           </div>
@@ -329,7 +468,7 @@ export function ProfileManager() {
               value={profile.about}
               onChange={(e) => setProfile(prev => ({ ...prev, about: e.target.value }))}
               rows={6}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              className={inputClassName}
               placeholder="Kendiniz hakkında bilgi verin..."
               required
             />
@@ -346,7 +485,7 @@ export function ProfileManager() {
               value={newSpecialty}
               onChange={(e) => setNewSpecialty(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && addSpecialty()}
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-black"
               placeholder="Yeni uzmanlık alanı ekle..."
             />
             <button
@@ -440,213 +579,289 @@ export function ProfileManager() {
         </div>
 
         {/* Kariyer Geçmişi */}
-        <div className="space-y-6">
-          <div className="flex justify-between items-center pb-4 border-b border-gray-200">
-            <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-              <FiBriefcase className="text-blue-600" />
-              Kariyer Geçmişi
-            </h3>
-            <button
-              onClick={addCareer}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 flex items-center gap-2"
-            >
-              <FiPlus />
-              Kariyer Ekle
-            </button>
-          </div>
-          
-          {profile.career_history?.map((career, index) => (
-            <div key={career.id} className="p-6 border border-gray-200 rounded-xl space-y-4 bg-gray-50">
-              <div className="flex justify-between items-start">
-                <h4 className="font-semibold text-gray-800">Kariyer #{index + 1}</h4>
-                <button
-                  onClick={() => removeCareer(index)}
-                  className="text-red-600 hover:text-red-800 transition-colors"
-                >
-                  <FiTrash2 />
-                </button>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Pozisyon</label>
-                  <input
-                    type="text"
-                    value={career.position}
-                    onChange={(e) => updateCareer(index, 'position', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Şirket</label>
-                  <input
-                    type="text"
-                    value={career.company}
-                    onChange={(e) => updateCareer(index, 'company', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Başlangıç Tarihi</label>
-                  <input
-                    type="date"
-                    value={career.start_date}
-                    onChange={(e) => updateCareer(index, 'start_date', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Bitiş Tarihi</label>
-                  <input
-                    type="date"
-                    value={career.end_date || ''}
-                    onChange={(e) => updateCareer(index, 'end_date', e.target.value || null)}
-                    disabled={career.is_current}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 disabled:bg-gray-100"
-                  />
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={career.is_current}
-                  onChange={(e) => {
-                    updateCareer(index, 'is_current', e.target.checked);
-                    if (e.target.checked) {
-                      updateCareer(index, 'end_date', null);
-                    }
-                  }}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <label className="text-sm font-medium text-gray-700">Şu anda burada çalışıyorum</label>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Açıklama</label>
-                <textarea
-                  value={career.description || ''}
-                  onChange={(e) => updateCareer(index, 'description', e.target.value)}
-                  rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                />
-              </div>
-            </div>
-          ))}
-        </div>
+        <EditableTimeline
+          items={convertCareerToTimeline()}
+          onEdit={handleEditCareer}
+          onDelete={removeCareer}
+          onAdd={handleAddCareer}
+          title="Kariyer Geçmişi"
+          addButtonText="Kariyer Ekle"
+          emptyMessage="Henüz kariyer geçmişi eklenmemiş"
+        />
 
         {/* Eğitim Geçmişi */}
-        <div className="space-y-6">
-          <div className="flex justify-between items-center pb-4 border-b border-gray-200">
-            <h3 className="text-xl font-bold text-gray-900 flex items-center gap-3">
-              <FiBook className="text-blue-600" />
-              Eğitim Geçmişi
-            </h3>
-            <button
-              onClick={addEducation}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 flex items-center gap-2"
-            >
-              <FiPlus />
-              Eğitim Ekle
-            </button>
-          </div>
-          
-          {profile.education_history?.map((education, index) => (
-            <div key={education.id} className="p-6 border border-gray-200 rounded-xl space-y-4 bg-gray-50">
-              <div className="flex justify-between items-start">
-                <h4 className="font-semibold text-gray-800">Eğitim #{index + 1}</h4>
+        <EditableTimeline
+          items={convertEducationToTimeline()}
+          onEdit={handleEditEducation}
+          onDelete={removeEducation}
+          onAdd={handleAddEducation}
+          title="Eğitim Geçmişi"
+          addButtonText="Eğitim Ekle"
+          emptyMessage="Henüz eğitim geçmişi eklenmemiş"
+        />
+
+        {/* Career Edit Modal */}
+        {editingCareer !== null && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xl font-bold text-gray-900">
+                    {editingCareer === -1 ? 'Yeni Kariyer Ekle' : 'Kariyer Düzenle'}
+                  </h3>
+                  <button
+                    onClick={() => setEditingCareer(null)}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <FiX size={24} />
+                  </button>
+                </div>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Pozisyon <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={careerForm.position}
+                      onChange={(e) => setCareerForm(prev => ({ ...prev, position: e.target.value }))}
+                      className={inputClassName}
+                      placeholder="Örn: Avukat, Hukuk Müşaviri"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Şirket <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={careerForm.company}
+                      onChange={(e) => setCareerForm(prev => ({ ...prev, company: e.target.value }))}
+                      className={inputClassName}
+                      placeholder="Şirket adı"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Başlangıç Tarihi <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      value={careerForm.start_date}
+                      onChange={(e) => setCareerForm(prev => ({ ...prev, start_date: e.target.value }))}
+                      className={inputClassName}
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bitiş Tarihi
+                    </label>
+                    <input
+                      type="date"
+                      value={careerForm.end_date || ''}
+                      onChange={(e) => setCareerForm(prev => ({ ...prev, end_date: e.target.value || null }))}
+                      disabled={careerForm.is_current}
+                      className={`${inputClassName} ${careerForm.is_current ? 'bg-gray-100' : ''}`}
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={careerForm.is_current}
+                    onChange={(e) => {
+                      setCareerForm(prev => ({
+                        ...prev,
+                        is_current: e.target.checked,
+                        end_date: e.target.checked ? null : prev.end_date
+                      }));
+                    }}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label className="text-sm font-medium text-gray-700">Şu anda burada çalışıyorum</label>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Açıklama
+                  </label>
+                  <textarea
+                    value={careerForm.description || ''}
+                    onChange={(e) => setCareerForm(prev => ({ ...prev, description: e.target.value }))}
+                    rows={4}
+                    className={inputClassName}
+                    placeholder="İş tanımı, sorumluluklar, başarılar..."
+                  />
+                </div>
+              </div>
+              
+              <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
                 <button
-                  onClick={() => removeEducation(index)}
-                  className="text-red-600 hover:text-red-800 transition-colors"
+                  onClick={() => setEditingCareer(null)}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
                 >
-                  <FiTrash2 />
+                  İptal
+                </button>
+                <button
+                  onClick={saveCareer}
+                  disabled={!careerForm.position || !careerForm.company || !careerForm.start_date}
+                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  <FiSave />
+                  Kaydet
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Education Edit Modal */}
+        {editingEducation !== null && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xl font-bold text-gray-900">
+                    {editingEducation === -1 ? 'Yeni Eğitim Ekle' : 'Eğitim Düzenle'}
+                  </h3>
+                  <button
+                    onClick={() => setEditingEducation(null)}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <FiX size={24} />
+                  </button>
+                </div>
+              </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Derece</label>
+              <div className="p-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Derece <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={educationForm.degree}
+                      onChange={(e) => setEducationForm(prev => ({ ...prev, degree: e.target.value }))}
+                      className={inputClassName}
+                      placeholder="Lisans, Yüksek Lisans, Doktora"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Okul <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={educationForm.school}
+                      onChange={(e) => setEducationForm(prev => ({ ...prev, school: e.target.value }))}
+                      className={inputClassName}
+                      placeholder="Üniversite adı"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bölüm
+                    </label>
+                    <input
+                      type="text"
+                      value={educationForm.field_of_study || ''}
+                      onChange={(e) => setEducationForm(prev => ({ ...prev, field_of_study: e.target.value }))}
+                      className={inputClassName}
+                      placeholder="Hukuk, İşletme, vb."
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Başlangıç Tarihi <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      value={educationForm.start_date}
+                      onChange={(e) => setEducationForm(prev => ({ ...prev, start_date: e.target.value }))}
+                      className={inputClassName}
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bitiş Tarihi
+                    </label>
+                    <input
+                      type="date"
+                      value={educationForm.end_date || ''}
+                      onChange={(e) => setEducationForm(prev => ({ ...prev, end_date: e.target.value || null }))}
+                      disabled={educationForm.is_current}
+                      className={`${inputClassName} ${educationForm.is_current ? 'bg-gray-100' : ''}`}
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
                   <input
-                    type="text"
-                    value={education.degree}
-                    onChange={(e) => updateEducation(index, 'degree', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Lisans, Yüksek Lisans, vb."
+                    type="checkbox"
+                    checked={educationForm.is_current}
+                    onChange={(e) => {
+                      setEducationForm(prev => ({
+                        ...prev,
+                        is_current: e.target.checked,
+                        end_date: e.target.checked ? null : prev.end_date
+                      }));
+                    }}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                   />
+                  <label className="text-sm font-medium text-gray-700">Şu anda devam ediyor</label>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Okul</label>
-                  <input
-                    type="text"
-                    value={education.school}
-                    onChange={(e) => updateEducation(index, 'school', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Bölüm</label>
-                  <input
-                    type="text"
-                    value={education.field_of_study || ''}
-                    onChange={(e) => updateEducation(index, 'field_of_study', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Başlangıç Tarihi</label>
-                  <input
-                    type="date"
-                    value={education.start_date}
-                    onChange={(e) => updateEducation(index, 'start_date', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-                
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Bitiş Tarihi</label>
-                  <input
-                    type="date"
-                    value={education.end_date || ''}
-                    onChange={(e) => updateEducation(index, 'end_date', e.target.value || null)}
-                    disabled={education.is_current}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 disabled:bg-gray-100"
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Açıklama
+                  </label>
+                  <textarea
+                    value={educationForm.description || ''}
+                    onChange={(e) => setEducationForm(prev => ({ ...prev, description: e.target.value }))}
+                    rows={4}
+                    className={inputClassName}
+                    placeholder="Notlar, başarılar, özel projeler..."
                   />
                 </div>
               </div>
               
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={education.is_current}
-                  onChange={(e) => {
-                    updateEducation(index, 'is_current', e.target.checked);
-                    if (e.target.checked) {
-                      updateEducation(index, 'end_date', null);
-                    }
-                  }}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <label className="text-sm font-medium text-gray-700">Şu anda devam ediyor</label>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Açıklama</label>
-                <textarea
-                  value={education.description || ''}
-                  onChange={(e) => updateEducation(index, 'description', e.target.value)}
-                  rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                />
+              <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+                <button
+                  onClick={() => setEditingEducation(null)}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
+                >
+                  İptal
+                </button>
+                <button
+                  onClick={saveEducation}
+                  disabled={!educationForm.degree || !educationForm.school || !educationForm.start_date}
+                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  <FiSave />
+                  Kaydet
+                </button>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
