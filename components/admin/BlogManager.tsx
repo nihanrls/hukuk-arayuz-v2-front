@@ -16,19 +16,31 @@ interface Blog {
   slug?: string;
   is_published: boolean;
   tags?: string[];
+  category_id?: string;
   created_at: string;
   updated_at: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  color: string;
+  is_active: boolean;
 }
 
 type SortOption = 'newest' | 'oldest' | 'title' | 'author' | 'published' | 'draft';
 
 export function BlogManager() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
+  const [newTag, setNewTag] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -38,12 +50,29 @@ export function BlogManager() {
     author: '',
     slug: '',
     is_published: true,
-    tags: [] as string[]
+    tags: [] as string[],
+    category_id: ''
   });
 
   useEffect(() => {
     fetchBlogs();
+    fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/admin/categories');
+      const data = await response.json();
+      
+      if (data.success) {
+        setCategories(data.data);
+      } else {
+        toast.error(data.error || 'Kategoriler alınırken hata oluştu');
+      }
+    } catch (error) {
+      toast.error('Kategoriler alınırken hata oluştu');
+    }
+  };
 
   // Filtrelenmiş ve sıralanmış bloglar
   const filteredAndSortedBlogs = useMemo(() => {
@@ -119,6 +148,33 @@ export function BlogManager() {
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-')
       .trim();
+  };
+
+  const addTag = () => {
+    if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        tags: [...prev.tags, newTag.trim()]
+      }));
+      setNewTag('');
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }));
+  };
+
+  const getCategoryName = (categoryId: string) => {
+    const category = categories.find(cat => cat.id === categoryId);
+    return category ? category.name : 'Kategori Yok';
+  };
+
+  const getCategoryColor = (categoryId: string) => {
+    const category = categories.find(cat => cat.id === categoryId);
+    return category ? category.color : '#6B7280';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -204,7 +260,8 @@ export function BlogManager() {
       author: blog.author || '',
       slug: blog.slug || '',
       is_published: blog.is_published,
-      tags: blog.tags || []
+      tags: blog.tags || [],
+      category_id: blog.category_id || ''
     });
     setShowForm(true);
   };
@@ -219,10 +276,12 @@ export function BlogManager() {
       author: '',
       slug: '',
       is_published: true,
-      tags: []
+      tags: [],
+      category_id: ''
     });
     setEditingBlog(null);
     setShowForm(false);
+    setNewTag('');
   };
 
   const formatDate = (dateString: string) => {
@@ -360,18 +419,37 @@ export function BlogManager() {
                 </div>
               </div>
 
-              {/* Yazar */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Yazar
-                </label>
-                                  <input
+              {/* Yazar ve Kategori */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Yazar
+                  </label>
+                  <input
                     type="text"
                     value={formData.author}
                     onChange={(e) => setFormData(prev => ({ ...prev, author: e.target.value }))}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-black"
                     placeholder="Yazarın adı..."
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Kategori
+                  </label>
+                  <select
+                    value={formData.category_id}
+                    onChange={(e) => setFormData(prev => ({ ...prev, category_id: e.target.value }))}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-black"
+                  >
+                    <option value="">Kategori Seçin</option>
+                    {categories.filter(cat => cat.is_active).map(category => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               {/* Özet */}
@@ -401,6 +479,51 @@ export function BlogManager() {
                   placeholder="Blog yazısının içeriği..."
                   required
                 />
+              </div>
+
+              {/* Tag Yönetimi */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Etiketler
+                </label>
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newTag}
+                      onChange={(e) => setNewTag(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-black"
+                      placeholder="Yeni etiket ekle..."
+                    />
+                    <button
+                      type="button"
+                      onClick={addTag}
+                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200"
+                    >
+                      <FiPlus />
+                    </button>
+                  </div>
+                  {formData.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {formData.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                        >
+                          {tag}
+                          <button
+                            type="button"
+                            onClick={() => removeTag(tag)}
+                            className="text-blue-600 hover:text-blue-800 transition-colors"
+                          >
+                            <FiX size={14} />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Görsel Yükleme */}
@@ -497,24 +620,46 @@ export function BlogManager() {
                           </>
                         )}
                       </span>
+                      {blog.category_id && (
+                        <span 
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white"
+                          style={{ backgroundColor: getCategoryColor(blog.category_id) }}
+                        >
+                          {getCategoryName(blog.category_id)}
+                        </span>
+                      )}
                     </div>
                     
                     {blog.excerpt && (
                       <p className="text-gray-600 mb-3 line-clamp-2">{blog.excerpt}</p>
                     )}
                     
-                    <div className="flex items-center text-sm text-gray-500 space-x-4">
-                      {blog.author && (
-                        <span>👤 {blog.author}</span>
-                      )}
-                      <span className="flex items-center">
-                        <FiCalendar className="mr-1" size={14} />
-                        {formatDate(blog.created_at)}
-                      </span>
-                      {blog.slug && (
-                        <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs">
-                          /{blog.slug}
+                    <div className="space-y-2">
+                      <div className="flex items-center text-sm text-gray-500 space-x-4">
+                        {blog.author && (
+                          <span>👤 {blog.author}</span>
+                        )}
+                        <span className="flex items-center">
+                          <FiCalendar className="mr-1" size={14} />
+                          {formatDate(blog.created_at)}
                         </span>
+                        {blog.slug && (
+                          <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs">
+                            /{blog.slug}
+                          </span>
+                        )}
+                      </div>
+                      {blog.tags && blog.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {blog.tags.map((tag, index) => (
+                            <span
+                              key={index}
+                              className="inline-flex items-center px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs"
+                            >
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
                       )}
                     </div>
                   </div>

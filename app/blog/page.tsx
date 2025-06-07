@@ -19,6 +19,7 @@ interface BlogPost {
   slug?: string;
   is_published: boolean;
   tags?: string[];
+  category_id?: string;
   created_at: string;
   updated_at: string;
 }
@@ -80,38 +81,49 @@ const convertToRecentPost = (post: BlogPost): RecentPost => ({
 const BlogPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [allTags, setAllTags] = useState<string[]>([]);
 
-  // Blog yazılarını fetch et
+  // Blog yazılarını ve kategorileri fetch et
   useEffect(() => {
-    const fetchBlogs = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('/api/blogs');
-        const data = await response.json();
+        // Blog yazılarını al
+        const blogsResponse = await fetch('/api/blogs');
+        const blogsData = await blogsResponse.json();
         
-        if (data.success) {
-          setBlogPosts(data.data);
+        // Kategorileri al
+        const categoriesResponse = await fetch('/api/admin/categories');
+        const categoriesData = await categoriesResponse.json();
+        
+        if (blogsData.success) {
+          setBlogPosts(blogsData.data);
           
           // Tüm etiketleri topla
           const tags = new Set<string>();
-          data.data.forEach((post: BlogPost) => {
+          blogsData.data.forEach((post: BlogPost) => {
             if (post.tags) {
               post.tags.forEach(tag => tags.add(tag));
             }
           });
           setAllTags(Array.from(tags));
         }
+
+        if (categoriesData.success) {
+          setCategories(categoriesData.data.filter((cat: any) => cat.is_active));
+        }
       } catch (error) {
-        console.error('Blog yazıları alınırken hata oluştu:', error);
+        console.error('Veriler alınırken hata oluştu:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchBlogs();
+    fetchData();
   }, []);
 
   // Filtrelenmiş blogları al
@@ -120,7 +132,8 @@ const BlogPage = () => {
                          (post.excerpt || post.content).toLowerCase().includes(searchTerm.toLowerCase());
     const matchesTags = selectedTags.length === 0 || 
                        (post.tags && post.tags.some(tag => selectedTags.includes(tag)));
-    return matchesSearch && matchesTags;
+    const matchesCategory = !selectedCategory || post.category_id === selectedCategory;
+    return matchesSearch && matchesTags && matchesCategory;
   });
 
   // Toplam sayfa sayısını hesapla
@@ -172,6 +185,46 @@ const BlogPage = () => {
           {/* Sol Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-4 space-y-8">
+              {/* Kategori Filtreleme */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Kategoriler</h3>
+                <div className="space-y-2">
+                  <button
+                    onClick={() => {
+                      setSelectedCategory('');
+                      setCurrentPage(1);
+                    }}
+                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                      !selectedCategory 
+                        ? 'bg-blue-100 text-blue-800 font-medium' 
+                        : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    Tüm Kategoriler
+                  </button>
+                  {categories.map(category => (
+                    <button
+                      key={category.id}
+                      onClick={() => {
+                        setSelectedCategory(category.id);
+                        setCurrentPage(1);
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                        selectedCategory === category.id 
+                          ? 'bg-blue-100 text-blue-800 font-medium' 
+                          : 'text-gray-600 hover:bg-gray-100'
+                      }`}
+                    >
+                      <div 
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: category.color }}
+                      />
+                      {category.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Etiket Filtreleme */}
               <TagFilter 
                 tags={allTags}
@@ -201,7 +254,7 @@ const BlogPage = () => {
             {currentPostsForCard.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-gray-500 text-lg">
-                  {searchTerm || selectedTags.length > 0 
+                  {searchTerm || selectedTags.length > 0 || selectedCategory
                     ? 'Arama kriterlerinize uygun blog yazısı bulunamadı.' 
                     : 'Henüz blog yazısı bulunmuyor.'}
                 </p>

@@ -20,7 +20,14 @@ export async function GET() {
     
     const { data: blogs, error } = await supabase
       .from('blogs')
-      .select('*')
+      .select(`
+        *,
+        blog_categories (
+          id,
+          name,
+          color
+        )
+      `)
       .order('created_at', { ascending: false });
     
     if (error) {
@@ -42,7 +49,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, content, excerpt, image_url, cover_image, author, slug, is_published, tags } = body;
+    const { title, content, excerpt, image_url, cover_image, author, slug, is_published, tags, category_id } = body;
     
     if (!title || !content) {
       return NextResponse.json(
@@ -64,7 +71,8 @@ export async function POST(request: NextRequest) {
         author,
         slug: slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
         is_published: is_published ?? true,
-        tags: tags || []
+        tags: tags || [],
+        category_id: category_id || null
       })
       .select()
       .single();

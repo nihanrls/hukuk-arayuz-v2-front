@@ -57,7 +57,7 @@ export async function PUT(
     console.log('🔍 PUT Blog ID:', id);
     
     const body = await request.json();
-    const { title, content, excerpt, image_url, author, slug, is_published, tags } = body;
+    const { title, content, excerpt, image_url, author, slug, is_published, tags, category_id } = body;
     console.log('📝 PUT Blog Data:', { title, content: content?.substring(0, 50) + '...', excerpt, image_url, author, slug, is_published, tags });
     
     if (!title || !content) {
@@ -96,7 +96,8 @@ export async function PUT(
         author,
         slug: slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
         is_published: is_published ?? true,
-        tags: tags || []
+        tags: tags || [],
+        category_id: category_id || null
       })
       .eq('id', id)
       .select()
