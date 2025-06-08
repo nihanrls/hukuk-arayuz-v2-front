@@ -5,11 +5,12 @@ import { BlogManager } from '@/components/admin/BlogManager';
 import { ProfileManager } from '@/components/admin/ProfileManager';
 import { CategoryManager } from '@/components/admin/CategoryManager';
 import { ServiceManager } from '@/components/admin/ServiceManager';
+import { FaqManager } from '@/components/admin/FaqManager';
 import Link from 'next/link';
-import { FiUser, FiFileText, FiSettings, FiTag, FiGrid } from 'react-icons/fi';
+import { FiUser, FiFileText, FiSettings, FiTag, FiGrid, FiHelpCircle } from 'react-icons/fi';
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState<'blogs' | 'profile' | 'categories' | 'services'>('blogs');
+  const [activeTab, setActiveTab] = useState<'blogs' | 'profile' | 'categories' | 'services' | 'faq'>('blogs');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-16">
@@ -72,6 +73,17 @@ export default function AdminPage() {
                 Hizmetler
               </button>
               <button
+                onClick={() => setActiveTab('faq')}
+                className={`${
+                  activeTab === 'faq'
+                    ? 'border-blue-500 text-blue-600 bg-white'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                } whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm rounded-t-lg transition-all duration-200 flex items-center gap-2`}
+              >
+                <FiHelpCircle className="text-lg" />
+                SSS
+              </button>
+              <button
                 onClick={() => setActiveTab('profile')}
                 className={`${
                   activeTab === 'profile'
@@ -90,6 +102,7 @@ export default function AdminPage() {
             {activeTab === 'blogs' && <BlogManager />}
             {activeTab === 'categories' && <CategoryManager />}
             {activeTab === 'services' && <ServiceManager />}
+            {activeTab === 'faq' && <FaqManager />}
             {activeTab === 'profile' && <ProfileManager />}
           </div>
         </div>

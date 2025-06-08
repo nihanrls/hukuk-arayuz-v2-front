@@ -122,9 +122,9 @@ const ServiceDetailPage = () => {
             <img
               src={service.cover_image}
               alt={service.title}
-              className="w-full h-full object-cover opacity-20"
+              className="w-full h-full object-cover opacity-100"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#111C31]/90 to-[#6454a4]/90"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#111C31]/40 to-[#6454a4]/40"></div>
           </div>
         )}
         

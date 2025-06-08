@@ -18,6 +18,38 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
 export interface Database {
   public: {
     Tables: {
+      faq: {
+        Row: {
+          id: string;
+          question: string;
+          answer: string;
+          category: string;
+          order_index: number;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          question: string;
+          answer: string;
+          category?: string;
+          order_index?: number;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          question?: string;
+          answer?: string;
+          category?: string;
+          order_index?: number;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       services: {
         Row: {
           id: string;
