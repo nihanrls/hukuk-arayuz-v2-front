@@ -16,6 +16,17 @@ const services = [
   { name: "Sigorta Hukuku", slug: "sigorta-hukuku" },
 ];
 
+const calculators = [
+  { name: "Nafaka Hesaplama", slug: "nafaka-hesaplama" },
+  { name: "Kıdem Tazminatı", slug: "kidem-tazminati" },
+  { name: "İhbar Tazminatı", slug: "ihbar-tazminati" },
+  { name: "Fazla Mesai Ücreti", slug: "fazla-mesai" },
+  { name: "Tapu Harcı", slug: "tapu-harci" },
+  { name: "İcra Masrafları", slug: "icra-masraflari" },
+  { name: "Vekalet Ücreti", slug: "vekalet-ucreti" },
+  { name: "Dava Masrafları", slug: "dava-masraflari" },
+];
+
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -50,12 +61,13 @@ const Navbar = () => {
             onMouseEnter={() => setServicesDropdownOpen(true)}
             onMouseLeave={() => setServicesDropdownOpen(false)}
           >
-            <button 
+            <Link 
+              href="/hizmetler"
               className="flex items-center gap-1 text-gray-300 hover:text-[#4352A5] transition-colors duration-200"
             >
               Hizmetler
               <ChevronDown size={18} className={`transition-transform duration-200 ${servicesDropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
+            </Link>
             <AnimatePresence>
               {servicesDropdownOpen && (
                 <motion.div 
@@ -79,19 +91,20 @@ const Navbar = () => {
             </AnimatePresence>
           </div>
           <Link href="/bizeulasin" className="text-gray-300 hover:text-[#4352A5] transition-colors duration-200">Bize Ulaşın</Link>
-          <Link href="/blog" className="text-gray-300 hover:text-[#4352A5] transition-colors duration-200">Blog</Link>
+          <Link href="/makaleler" className="text-gray-300 hover:text-[#4352A5] transition-colors duration-200">Makaleler</Link>
           <Link href="/sss" className="text-gray-300 hover:text-[#4352A5] transition-colors duration-200">SSS</Link>
           <div 
             className="relative group"
             onMouseEnter={() => setDropdownOpen(true)}
             onMouseLeave={() => setDropdownOpen(false)}
           >
-            <button 
+            <Link 
+              href="/hesaplamalar"
               className="flex items-center gap-1 text-gray-300 hover:text-[#4352A5] transition-colors duration-200"
             >
               Hesaplamalar
               <ChevronDown size={18} className={`transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
+            </Link>
             <AnimatePresence>
               {dropdownOpen && (
                 <motion.div 
@@ -99,11 +112,17 @@ const Navbar = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute left-0 mt-2 w-48 bg-[#111C31] shadow-md rounded-md overflow-hidden"
+                  className="absolute left-0 mt-2 w-56 bg-[#111C31] shadow-md rounded-md overflow-hidden"
                 >
-                  <Link href="/hesaplama1" className="block px-4 py-2 text-gray-300 hover:text-[#4352A5] hover:bg-[#1a2438] transition-colors duration-200">Hesaplama 1</Link>
-                  <Link href="/hesaplama2" className="block px-4 py-2 text-gray-300 hover:text-[#4352A5] hover:bg-[#1a2438] transition-colors duration-200">Hesaplama 2</Link>
-                  <Link href="/hesaplama3" className="block px-4 py-2 text-gray-300 hover:text-[#4352A5] hover:bg-[#1a2438] transition-colors duration-200">Hesaplama 3</Link>
+                  {calculators.map((calculator) => (
+                    <Link 
+                      key={calculator.slug}
+                      href={`/hesaplamalar/${calculator.slug}`}
+                      className="block px-4 py-2 text-gray-300 hover:text-[#4352A5] hover:bg-[#1a2438] transition-colors duration-200"
+                    >
+                      {calculator.name}
+                    </Link>
+                  ))}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -126,13 +145,14 @@ const Navbar = () => {
             <Link href="/" className="text-gray-300 hover:text-[#4352A5] transition-colors duration-200">Ana Sayfa</Link>
             <Link href="/hakkinda" className="text-gray-300 hover:text-[#4352A5] transition-colors duration-200">Hakkında</Link>
             <div className="relative">
-              <button 
+              <Link 
+                href="/hizmetler"
                 onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)} 
                 className="flex items-center gap-1 text-gray-300 hover:text-[#4352A5] transition-colors duration-200"
               >
                 Hizmetler
                 <ChevronDown size={18} className={`transition-transform duration-200 ${servicesDropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
+              </Link>
               <AnimatePresence>
                 {servicesDropdownOpen && (
                   <motion.div 
@@ -156,16 +176,17 @@ const Navbar = () => {
               </AnimatePresence>
             </div>
             <Link href="/bizeulasin" className="text-gray-300 hover:text-[#4352A5] transition-colors duration-200">Bize Ulaşın</Link>
-            <Link href="/blog" className="text-gray-300 hover:text-[#4352A5] transition-colors duration-200">Blog</Link>
+            <Link href="/makaleler" className="text-gray-300 hover:text-[#4352A5] transition-colors duration-200">Makaleler</Link>
             <Link href="/sss" className="text-gray-300 hover:text-[#4352A5] transition-colors duration-200">SSS</Link>
             <div className="relative">
-              <button 
+              <Link 
+                href="/hesaplamalar"
                 onClick={() => setDropdownOpen(!dropdownOpen)} 
                 className="flex items-center gap-1 text-gray-300 hover:text-[#4352A5] transition-colors duration-200"
               >
                 Hesaplamalar
                 <ChevronDown size={18} className={`transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
+              </Link>
               <AnimatePresence>
                 {dropdownOpen && (
                   <motion.div 
@@ -175,9 +196,15 @@ const Navbar = () => {
                     transition={{ duration: 0.2 }}
                     className="flex flex-col gap-2 pl-4 overflow-hidden"
                   >
-                    <Link href="/hesaplama1" className="text-gray-300 hover:text-[#4352A5] transition-colors duration-200">Hesaplama 1</Link>
-                    <Link href="/hesaplama2" className="text-gray-300 hover:text-[#4352A5] transition-colors duration-200">Hesaplama 2</Link>
-                    <Link href="/hesaplama3" className="text-gray-300 hover:text-[#4352A5] transition-colors duration-200">Hesaplama 3</Link>
+                    {calculators.map((calculator) => (
+                      <Link 
+                        key={calculator.slug}
+                        href={`/hesaplamalar/${calculator.slug}`}
+                        className="text-gray-300 hover:text-[#4352A5] transition-colors duration-200"
+                      >
+                        {calculator.name}
+                      </Link>
+                    ))}
                   </motion.div>
                 )}
               </AnimatePresence>
