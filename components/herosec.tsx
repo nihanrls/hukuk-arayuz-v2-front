@@ -99,10 +99,10 @@ const HeroSection = () => {
               transition={{ duration: 0.5 }} // Animasyon süresi
               className="text-center text-white"
             >
-              <h1 className="text-6xl md:text-7xl font-bold mb-4 text-gray-100 font-crimson">
+              <h1 className="text-6xl md:text-7xl font-bold mb-4 text-gray-100 font-ubuntu">
                 {slide.title}
               </h1>
-              <p className="text-3xl mb-8 font-crimson">
+              <p className="text-3xl mb-8 font-ubuntu">
                 {slide.description}
               </p>
               <Link href={slide.buttonLink}>

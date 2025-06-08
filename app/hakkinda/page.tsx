@@ -175,7 +175,7 @@ const AboutPage = () => {
 
           {/* Sağ Taraf - Bilgiler */}
           <div className="lg:w-2/3 space-y-6 ml-4">
-            <h1 className="text-4xl lg:text-5xl font-bold font-[Crimson] text-gray-800">
+            <h1 className="text-4xl lg:text-5xl font-bold font-ubuntu text-gray-800">
               {profile.title} {profile.first_name} {profile.last_name}
             </h1>
             
@@ -323,7 +323,7 @@ const AboutPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <h2 className="text-4xl lg:text-5xl font-bold font-[Crimson] text-gray-800 mb-4">
+              <h2 className="text-4xl lg:text-5xl font-bold font-ubuntu text-gray-800 mb-4">
                 Profesyonel Geçmiş
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -400,7 +400,7 @@ const AboutPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <h2 className="text-4xl lg:text-5xl font-bold font-[Crimson] text-white mb-4">
+              <h2 className="text-4xl lg:text-5xl font-bold font-ubuntu text-white mb-4">
               Hukuki Desteğe mi İhtiyacınız Var?
             </h2>
               <p className="text-blue-100 text-xl leading-relaxed max-w-2xl mx-auto">

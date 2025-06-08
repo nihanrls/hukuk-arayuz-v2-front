@@ -52,8 +52,8 @@ const ClientSupport = () => {
         animate={isVisible ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 1, ease: "easeOut" }}
       >
-        <h2 className="text-4xl font-bold font-[Crimson] mb-4 text-white">Her bir danışanımıza yardımcı olmayı amaçlıyoruz. </h2>
-        <p className="text-lg text-left font-[Ubuntu] text-gray-200 mb-6">
+                    <h2 className="text-4xl font-bold font-ubuntu mb-4 text-white">Her bir danışanımıza yardımcı olmayı amaçlıyoruz. </h2>
+            <p className="text-lg text-left font-ubuntu text-gray-200 mb-6">
           Danışanlarımızın ihtiyaçlarını anlamak ve onlara en iyi hizmeti sunmak için buradayız. 
           Her türlü hukuki süreçte yanınızdayız.                                                                 
         </p>

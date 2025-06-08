@@ -28,7 +28,7 @@ const Konum = () => {
 
             {/* Sağ taraf - İletişim Bilgileri */}
             <div className="lg:w-1/3 p-8 bg-white">
-              <h2 className="text-3xl font-bold font-[Crimson] text-gray-800 mb-6">
+              <h2 className="text-3xl font-bold font-ubuntu text-gray-800 mb-6">
                 İletişim Bilgileri
               </h2>
               

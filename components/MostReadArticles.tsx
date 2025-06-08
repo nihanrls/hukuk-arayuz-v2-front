@@ -89,7 +89,7 @@ const MostReadArticles = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl lg:text-5xl font-bold font-[Crimson] text-gray-800 mb-4">
+          <h2 className="text-4xl lg:text-5xl font-bold font-ubuntu text-gray-800 mb-4">
             Öne Çıkan Yazılar
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">

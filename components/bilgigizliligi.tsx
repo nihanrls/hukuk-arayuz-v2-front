@@ -37,7 +37,7 @@ const PrivacyComponent = () => {
         animate={isVisible ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 1, ease: "easeOut" }}
       >
-        <h2 className="text-3xl font-bold font-[Crimson] text-gray-800">
+        <h2 className="text-3xl font-bold font-ubuntu text-gray-800">
           Bilgi Gizliliği
         </h2>
       </motion.div>
@@ -52,7 +52,7 @@ const PrivacyComponent = () => {
         animate={isVisible ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
       >
-        <p className="text-lg font-[Ubuntu] text-gray-600">
+        <p className="text-lg font-ubuntu text-gray-600">
           Müvekkillerimizin bilgilerinin gizliliği bizim için önceliklidir. Her türlü hukuki bilgi ve belge gizlilik prensiplerine uygun olarak korunur ve asla izinsiz üçüncü kişilerle paylaşılmaz.
         </p>
       </motion.div>
